@@ -1,0 +1,13 @@
+services:
+  postgresql:
+    image: postgres
+    container_name: pg-docker
+    ports:
+      - "5400:5432"
+    environment:
+      - POSTGRES_USER=docker
+      - POSTGRES_PASSWORD=docker
+    volumes:
+      - ./postgres.conf:/./postgresql/postgresql.conf
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    restart: always
