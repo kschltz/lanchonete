@@ -3,7 +3,7 @@
     [integrant.core :as ig]
     [migratus.core :as migratus]))
 
-(defmethod ig/init-key :db.sql/migrations
+(defmethod ig/init-key ::migratus
   [_ {:keys [migrate-on-init?]
       :or   {migrate-on-init? true}
       :as   component}]
