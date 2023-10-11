@@ -1,0 +1,12 @@
+{:system/env
+ #profile {:dev :dev
+           :test :test
+           :prod :prod}
+
+ :db.sql/migrations {:store            :database
+                     :db               {:classname   "org.postgresql.driver"
+                                        :subprotocol "postgresql"
+                                        :subname     "//localhost:9000/"
+                                        :user        "lanchonete-user"
+                                        :password    "lanchonete-pass"}
+                     :migrate-on-init? true}}
