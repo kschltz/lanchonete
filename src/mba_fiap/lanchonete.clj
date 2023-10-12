@@ -15,10 +15,13 @@
 (defn read-config []
   (aero/read-config (io/resource system-filename)))
 
-(defn start-app []
+(defn prep-config []
   (let [config-map (read-config)]
-    (ig/prep config-map)
-    (ig/init config-map)))
+    (ig/prep config-map)))
+
+(defn start-app []
+  (-> (prep-config)
+      (ig/init)))
 
 (defn -main
   [& args]

@@ -1,8 +1,8 @@
 (ns mba-fiap.datasource.postgres
-  (:require [next.jdbc :as jdbc]
-            [honey.sql :as hs]
+  (:require [honey.sql :as hs]
             [integrant.core :as ig]
-            [mba-fiap.repository.cliente :refer [ClienteRepository]]))
+            [mba-fiap.repository.cliente :refer [ClienteRepository]]
+            [next.jdbc :as jdbc]))
 
 (defrecord ClienteDatasource [connection]
   ClienteRepository
@@ -14,8 +14,6 @@
                            :nome (:nome cliente)
                            :email (:email cliente)}}))))
 
-
-
 (defmethod ig/init-key ::db
   [_ {:keys [spec]
       :as component}]
@@ -23,3 +21,7 @@
     component
     :datasource
     (jdbc/get-datasource spec )))
+
+(defmethod ig/resolve-key ::db
+  [_ {:keys [datasource]}]
+  datasource)

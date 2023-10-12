@@ -1,27 +1,19 @@
-{:system/env
- #profile {:dev :dev
-           :test :test
-           :prod :prod}
-
- :mba-fiap.datasource.postgres/db
- {:spec {:classname "org.postgresql.Driver"
+{:mba-fiap.datasource.postgres/db
+ {:spec {:dbtype "postgresql"
+         :classname "org.postgresql.Driver"
          :auto-commit true
          :read-only false
          :subprotocol "postgresql"
-         :subname #join ["//" #or [#env POSTGRES_HOST "localhost"]
-                         ":" #or [#env POSTGRES_PORT 5432] "/"
-                         #or [#env POSTGRES_DB "lanchonete"]]
-         :maximum-pool-size #long #or [#env DB_MAX_POOL_SIZE 10]
-         :pool-name "db-pool"
-         :adapter "postgresql"
-         :username #or [#env POSTGRES_USER "local"]
-         :password #or [#env POSTGRES_PASSWORD "local"]
+         :user #or [#env POSTGRES_USER "postgres"]
+         :password #or [#env POSTGRES_PASSWORD "password"]
          :database-name #profile {:test "lanchonete-test"
                                   :local #or [#env POSTGRES_DB "lanchonete"]}
-         :server-name #or [#env POSTGRES_HOST "localhost"]
-         :port-number #profile {:default #or [#env POSTGRES_PORT 5432]}}}
+         :host #or [#env POSTGRES_HOST "localhost"]
+         :port #profile {:default #or [#env POSTGRES_PORT 5400]}}}
 
  :mba-fiap.datasource.migratus/migratus
  {:store :database
-  :db #ig/ref :mba-fiap.datasource.postgres/db
-  :migrate-on-init? true}}
+  :migration-dir "migrations/"
+  :init-in-transaction? false
+  :migration-table-name "app_migrations"
+  :db {:datasource #ig/ref :mba-fiap.datasource.postgres/db}}}

@@ -10,6 +10,7 @@
         integrant/integrant {:mvn/version "0.8.1"}
         aero/aero {:mvn/version "1.1.6"}
         org.clojure/clojure {:mvn/version "1.11.1"}
+        integrant/repl {:mvn/version "0.3.3"}
         migratus/migratus {:mvn/version "1.5.3"}
         org.slf4j/slf4j-log4j12 {:mvn/version "1.6.3"}
         org.clojure/tools.logging {:mvn/version "1.2.4"}}
