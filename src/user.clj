@@ -14,4 +14,4 @@
   (:mba-fiap.datasource.postgres/db integrant.repl.state/system))
 
 (defn add-migration [migration-name]
-  (migratus/create (migratus) "migaration-name"))
+  (migratus/create (migratus) migration-name))
