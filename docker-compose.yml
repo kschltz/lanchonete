@@ -10,4 +10,25 @@ services:
       - POSTGRES_PASSWORD=password
     volumes:
       - ./postgresql/data:/var/lib/postgresql/data
+    networks:
+      - default
+
+  lanchonete:
+    build: .
+    depends_on:
+      - db
+    volumes:
+      - m2-repo:/usr/share/maven
+
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+    networks:
+      - default
+volumes:
+  m2-repo:
+
+
 

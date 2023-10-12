@@ -25,4 +25,5 @@
 
 (defn -main
   [& args]
+  (println "Running ...")
   (start-app))

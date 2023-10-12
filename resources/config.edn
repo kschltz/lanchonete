@@ -6,8 +6,6 @@
          :subprotocol "postgresql"
          :user #or [#env POSTGRES_USER "postgres"]
          :password #or [#env POSTGRES_PASSWORD "password"]
-         :database-name #profile {:test "lanchonete-test"
-                                  :local #or [#env POSTGRES_DB "lanchonete"]}
          :host #or [#env POSTGRES_HOST "localhost"]
          :port #profile {:default #or [#env POSTGRES_PORT 5400]}}}
 
