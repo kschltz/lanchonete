@@ -2,28 +2,30 @@
   (:gen-class)
   (:require
     [aero.core :as aero]
-    [mba-fiap.datasource.migratus]
     [clojure.java.io :as io]
+    [com.brunobonacci.mulog :as log]
     [integrant.core :as ig]
-    [mba-fiap.datasource.postgres]))
+    [mba-fiap.datasource.cliente]))
 
 (def ^:const system-filename "config.edn")
-
+(log/start-publisher! {:type :console})
 (defmethod aero.core/reader 'ig/ref
   [{:keys [profile] :as opts} _tag value]
   (integrant.core/ref value))
-(defn read-config []
-  (aero/read-config (io/resource system-filename)))
+(defn read-config [profile]
+  (aero/read-config (io/resource system-filename) {:profile profile}))
 
-(defn prep-config []
-  (let [config-map (read-config)]
+(defn prep-config [profile]
+  (let [config-map (read-config profile)]
+    (ig/load-namespaces config-map)
     (ig/prep config-map)))
 
-(defn start-app []
-  (-> (prep-config)
+(defn start-app [profile]
+  (-> (prep-config profile)
       (ig/init)))
 
 (defn -main
   [& args]
-  (println "Running ...")
-  (start-app))
+  (let [profile (or (some-> args first keyword) :prod)]
+    (println "Running, profile: " profile)
+    (start-app profile)))

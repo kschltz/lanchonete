@@ -16,7 +16,9 @@
         org.clojure/tools.logging {:mvn/version "1.2.4"}}
 
  :aliases
- {:run-m {:main-opts ["-m" "mba-fiap.lanchonete"]}
+ {:dev {:extra-deps {hato/hato {:mvn/version "0.9.0"}
+                     djblue/portal {:mvn/version "0.48.0"}}}
+  :run-m {:main-opts ["-m" "mba-fiap.lanchonete"]}
   :run-x {:ns-default mba-fiap.lanchonete
           :exec-fn greet
           :exec-args {:name "Clojure"}}

@@ -14,4 +14,17 @@
   :migration-dir "migrations/"
   :init-in-transaction? false
   :migration-table-name "app_migrations"
-  :db {:datasource #ig/ref :mba-fiap.datasource.postgres/db}}}
+  :db {:datasource #ig/ref :mba-fiap.datasource.postgres/db}}
+
+
+ [:mba-fiap.repository.repository/repository :repository/cliente]
+ {:repository-name :cliente
+  :connection #ig/ref :mba-fiap.datasource.postgres/db}
+
+ :mba-fiap.adapter.http.server/server
+ {:env #profile {:default :dev
+                 :test :test
+                 :prod :prod}
+ :port #profile {:default #or [#env HTTP_PORT 8080]}
+  :join? #profile {:default true
+                   :dev false}}}
