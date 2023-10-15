@@ -8,7 +8,6 @@
     [mba-fiap.datasource.cliente]))
 
 (def ^:const system-filename "config.edn")
-(log/start-publisher! {:type :console})
 (defmethod aero.core/reader 'ig/ref
   [{:keys [profile] :as opts} _tag value]
   (integrant.core/ref value))
@@ -21,6 +20,7 @@
     (ig/prep config-map)))
 
 (defn start-app [profile]
+  (log/start-publisher! {:type :console})
   (-> (prep-config profile)
       (ig/init)))
 

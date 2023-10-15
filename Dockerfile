@@ -4,7 +4,7 @@ RUN mkdir -p /build
 WORKDIR /build
 COPY ./ /build/
 
-RUN clojure -T:dev:test:build ci
+RUN clojure -T:test:build ci
 
 FROM eclipse-temurin:17-alpine AS runner
 RUN addgroup -S lanchonete && adduser -S lanchonete -G lanchonete
@@ -13,5 +13,7 @@ USER lanchonete
 
 RUN mkdir -p /service
 WORKDIR /service
+ENV HTTP_PORT=8080
+EXPOSE 8080
 COPY --from=builder /build/target/net.clojars.mba-fiap/lanchonete-0.1.0-SNAPSHOT.jar /service/lanchonete.jar
 ENTRYPOINT ["java", "-jar", "/service/lanchonete.jar"]

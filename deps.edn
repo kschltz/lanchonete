@@ -16,10 +16,11 @@
         org.clojure/tools.logging {:mvn/version "1.2.4"}}
 
  :aliases
- {:dev {:extra-deps {hato/hato {:mvn/version "0.9.0"}
+ {:dev {:extra-paths ["dev"]
+        :extra-deps {hato/hato {:mvn/version "0.9.0"}
                      djblue/portal {:mvn/version "0.48.0"}}}
-  :run-m {:main-opts ["-m" "lanchonete"]}
-  :run-x {:ns-default lanchonete
+  :run-m {:main-opts ["-m" "mba-fiap.lanchonete"]}
+  :run-x {:ns-default mba-fiap.lanchonete
           :exec-fn greet
           :exec-args {:name "Clojure"}}
   :build {:deps {io.github.clojure/tools.build {:mvn/version "0.9.4"}}

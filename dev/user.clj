@@ -1,11 +1,10 @@
 (ns user
   (:require
-    [com.brunobonacci.mulog :as log]
-    [integrant.core :as ig]
     [hato.client :as hc]
-    [mba-fiap.lanchonete :as lanchonete]
-    [integrant.repl.state]
+    [integrant.core :as ig]
     [integrant.repl :as r]
+    [integrant.repl.state]
+    [mba-fiap.lanchonete :as lanchonete]
     [migratus.core :as migratus]))
 
 (integrant.repl/set-prep! #(lanchonete/prep-config :dev))
@@ -39,4 +38,4 @@
   (migratus/create (migratus) migration-name))
 
 (comment
-  (hc/post "http://localhost:8080/cliente" {:body "{\"a\": 1}"}))
+  (hc/post "http://localhost:8888/cliente" {:body "{\"a\": 1}"}))
