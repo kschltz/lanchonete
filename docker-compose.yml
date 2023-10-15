@@ -1,13 +1,34 @@
 services:
-  postgresql:
-    image: postgres
-    container_name: pg-docker
+  db:
+    image: postgres:16.0
+    restart: always
+    container_name: pg-postgres
     ports:
       - "5400:5432"
     environment:
-      - POSTGRES_USER=docker
-      - POSTGRES_PASSWORD=docker
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
     volumes:
-      - ./postgres.conf:/./postgresql/postgresql.conf
-    command: postgres -c config_file=/etc/postgresql/postgresql.conf
-    restart: always
+      - ./postgresql/data:/var/lib/postgresql/data
+    networks:
+      - default
+
+  lanchonete:
+    build: .
+    depends_on:
+      - db
+    volumes:
+      - m2-repo:/usr/share/maven
+
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+    networks:
+      - default
+volumes:
+  m2-repo:
+
+
+

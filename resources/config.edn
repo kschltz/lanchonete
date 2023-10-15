@@ -1,12 +1,17 @@
-{:system/env
- #profile {:dev :dev
-           :test :test
-           :prod :prod}
+{:mba-fiap.datasource.postgres/db
+ {:spec {:dbtype "postgresql"
+         :classname "org.postgresql.Driver"
+         :auto-commit true
+         :read-only false
+         :subprotocol "postgresql"
+         :user #or [#env POSTGRES_USER "postgres"]
+         :password #or [#env POSTGRES_PASSWORD "password"]
+         :host #or [#env POSTGRES_HOST "localhost"]
+         :port #profile {:default #or [#env POSTGRES_PORT 5400]}}}
 
- :db.sql/migrations {:store            :database
-                     :db               {:classname   "org.postgresql.driver"
-                                        :subprotocol "postgresql"
-                                        :subname     "//localhost:9000/"
-                                        :user        "lanchonete-user"
-                                        :password    "lanchonete-pass"}
-                     :migrate-on-init? true}}
+ :mba-fiap.datasource.migratus/migratus
+ {:store :database
+  :migration-dir "migrations/"
+  :init-in-transaction? false
+  :migration-table-name "app_migrations"
+  :db {:datasource #ig/ref :mba-fiap.datasource.postgres/db}}}
