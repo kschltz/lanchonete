@@ -1,17 +1,20 @@
 (ns mba-fiap.adapter.cliente-rest
-  (:require [mba-fiap.service.cliente :as cliente.service]))
+  (:require [mba-fiap.service.cliente :as cliente.service]
+            [io.pedestal.http.body-params :as body-params]
+            [io.pedestal.http.ring-middlewares :as middlewares]))
 
 
-(defn criar-cliente [request]
-  (let [repository (get-in request [:context :repository])
+(defn cadastrar-cliente [request]
+  (let [_ (tap> request)
+        repository (get-in request [:context :repository])
         ;; repositories loaded when app starts up via an interceptor or anything, really
         data (get-in request [:params :cliente])]
-    (cliente.service/cadastrar-cliente repository data)))
+    ;(cliente.service/cadastrar-cliente repository data)
+    {:status 200}))
 
-(defn routes []
-  [["/cliente" {:post criar-cliente}]
-   ["/cliente/:id" {
-                    ;:get read-cliente
-                    ;:put update-cliente
-                    ;:delete delete-cliente
-                    }]])
+(defn cliente-routes []
+  [[["/cliente" ^:interceptors [(body-params/body-params)
+                                middlewares/params
+                                middlewares/keyword-params]
+     {:post `cadastrar-cliente}]]])
+
