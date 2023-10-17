@@ -26,7 +26,10 @@
 
 
 (def Cliente
-  [:or CPFIdentifiedCliente EmailIdentifiedCliente AnonymousCliente])
+  [:or
+   CPFIdentifiedCliente
+   EmailIdentifiedCliente
+   AnonymousCliente])
 
 (defn ->cliente-type [cliente]
   (->> cliente-types

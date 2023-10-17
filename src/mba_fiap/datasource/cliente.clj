@@ -1,7 +1,8 @@
 (ns mba-fiap.datasource.cliente
   (:require [honey.sql :as hs]
             [next.jdbc :as jdbc]
-            [mba-fiap.repository.repository :as repository]))
+            [mba-fiap.repository.repository :as repository])
+  (:import [java.io Closeable]))
 
 (defrecord ClienteDatasource [connection]
   repository/Repository

@@ -6,10 +6,10 @@
 
 (defn cadastrar-cliente [request]
   (let [_ (tap> request)
-        repository (get-in request [:context :repository])
+        repository (get-in request [:context :repository/cliente])
         ;; repositories loaded when app starts up via an interceptor or anything, really
         data (get-in request [:params :cliente])]
-    ;(cliente.service/cadastrar-cliente repository data)
+    (cliente.service/cadastrar-cliente repository data)
     {:status 200}))
 
 (defn cliente-routes []
