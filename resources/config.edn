@@ -25,6 +25,8 @@
  {:env #profile {:default :dev
                  :test :test
                  :prod :prod}
- :port #long #profile {:default #or [#env HTTP_PORT 8080]}
+  :port #long #profile {:default #or [#env HTTP_PORT 8080]}
   :join? #profile {:default true
-                   :dev false}}}
+                   :dev false}
+
+  :app-context {:repository/cliente #ig/ref :repository/cliente}}}

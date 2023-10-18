@@ -2,24 +2,37 @@
   (:require [integrant.core :as ig]
             [io.pedestal.http :as http]
             [io.pedestal.http.route :as route]
-            [mba-fiap.adapter.cliente-rest :as cliente-rest]))
+            [io.pedestal.interceptor.helpers :as interceptor]
+            [mba-fiap.adapter.cliente-rest :as cliente-rest]
+            [clojure.data.json :as json]))
 
+
+(defn context-interceptor [context]
+  (interceptor/on-request #(assoc % :app-context context)))
 
 (defn routes []
   (route/expand-routes
-    (cliente-rest/cliente-routes)))
+    [[["/" {:get `prn}]
+      (cliente-rest/cliente-routes)]]))
 
-(defn server [{:keys [env port join?]}]
-  (cond-> {:env env
-           ::http/routes (routes)
-           ::http/resource-path "/public"
-           ::http/type :jetty
-           ::http/join? join?
-           ::http/port port}
-          :always http/default-interceptors
-          (or (= :dev env)
-              (= :test env)) http/dev-interceptors
-          :then http/create-server))
+(defn server [{:keys [env port join? app-context]}]
+  (let [ctx-interceptor (context-interceptor app-context)]
+    (cond-> {:env env
+             ::http/routes (routes)
+             ::http/resource-path "/public"
+             ::http/type :jetty
+             ::http/join? join?
+             ::http/port port}
+            :always http/default-interceptors
+            :always (update :io.pedestal.http/interceptors
+                            #(vec
+                               (concat %
+                                       [ctx-interceptor
+                                        ])))
+            (or (= :dev env)
+                (= :test env)) http/dev-interceptors
+            :then http/create-server)))
+
 
 (defmethod ig/init-key ::server [_ cfg]
   (http/start (server cfg)))

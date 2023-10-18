@@ -7,5 +7,5 @@
 (defn cadastrar-cliente [^Repository repository data]
   {:pre [(instance? Repository repository)
          (validation/schema-check cliente/Cliente data )]}
-  (let [{:cliente/keys [id]} (.criar repository data)]
+  (let [[{:cliente/keys [id]}] (.criar repository data)]
     {:id id}))

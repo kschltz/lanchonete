@@ -6,15 +6,15 @@
 
 (defn cadastrar-cliente [request]
   (let [_ (tap> request)
-        repository (get-in request [:context :repository/cliente])
-        ;; repositories loaded when app starts up via an interceptor or anything, really
-        data (get-in request [:params :cliente])]
-    (cliente.service/cadastrar-cliente repository data)
-    {:status 200}))
+        repository (get-in request [:app-context :repository/cliente])
+        data (:json-params request)
+        result (cliente.service/cadastrar-cliente repository data)]
+    {:status 200
+     :body result}))
 
 (defn cliente-routes []
-  [[["/cliente" ^:interceptors [(body-params/body-params)
-                                middlewares/params
-                                middlewares/keyword-params]
-     {:post `cadastrar-cliente}]]])
+  ["/cliente" ^:interceptors [(body-params/body-params)
+                              middlewares/params
+                              middlewares/keyword-params]
+   {:post `cadastrar-cliente}])
 

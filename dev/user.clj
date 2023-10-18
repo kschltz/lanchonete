@@ -37,5 +37,6 @@
 (defn add-migration [migration-name]
   (migratus/create (migratus) migration-name))
 
-(comment
-  (hc/post "http://localhost:8888/cliente" {:body "{\"a\": 1}"}))
+(defn post-client []
+  (hc/post "http://localhost:8080/cliente" {:headers {"Content-Type" "application/json"}
+                                            :body "{\"cpf\": \"04373360189\"}"}))
