@@ -30,3 +30,4 @@
 .idea
 **/*.iml
 *.iml
+.clj-kondo
