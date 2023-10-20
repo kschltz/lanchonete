@@ -19,6 +19,7 @@
     x
     (->businessError
       (str
-        (me/humanize (m/explain schema x))))))
+        (me/humanize (m/explain schema x)) "\n"
+        x))))
 
 

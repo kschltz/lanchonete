@@ -8,7 +8,7 @@
   (re-matches email-regex email))
 
 (defn gen-email []
-  (gen/fmap (fn [s] (str s "@email.com")) (gen/string-alphanumeric)))
+  (gen/fmap (fn [s] (str "z"  s "@email.com")) (gen/string-alphanumeric :size 10)))
 
 (def Email
   (m/-simple-schema

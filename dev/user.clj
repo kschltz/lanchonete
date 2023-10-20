@@ -31,8 +31,8 @@
        second))
 
 (comment
-(.listar (repository :repository/cliente) {})
-)
+  (.listar (repository :repository/cliente) {})
+  )
 
 (defn add-migration [migration-name]
   (migratus/create (migratus) migration-name))
@@ -40,3 +40,7 @@
 (defn post-client []
   (hc/post "http://localhost:8080/cliente" {:headers {"Content-Type" "application/json"}
                                             :body "{\"cpf\": \"04373360189\"}"}))
+
+(defn get-cliente [cpf]
+  (hc/get (str "http://localhost:8080/cliente/" cpf)))
+
