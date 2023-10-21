@@ -1,5 +1,6 @@
 (ns user
   (:require
+    [clojure.data.json :as json]
     [hato.client :as hc]
     [integrant.core :as ig]
     [integrant.repl :as r]
@@ -55,7 +56,7 @@
 
 (defn post-client
   []
-  (hc/post "http://localhost:8080/cliente" {:headers {"Content-Type" "application/json"}
+  (hc/post "http://localhost:8080/cliente" {:headers {"content-type" "application/json"}
                                             :body "{\"cpf\": \"04373360189\"}"}))
 
 
@@ -72,6 +73,15 @@
       (doto tap>)))
 
 
+(defn criar-produtos
+  []
+  (hc/post "http://localhost:8080/produto" {:headers {"content-type" "application/json"}
+                                            :body (json/write-str {:nome "Sandubinha do bem"
+                                                                   :descricao "Sandubinha do bem"
+                                                                   :categoria "lanche"
+                                                                   :preco-centavos 4400})}))
+
+
 (defn portal
   []
   (eval '(do
@@ -79,6 +89,3 @@
            (add-tap api/submit)
            (api/open))))
 
-
-(comment
-  (get-produtos "lanche"))
