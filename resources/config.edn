@@ -34,4 +34,5 @@
   :join? #profile {:default true
                    :dev false}
 
-  :app-context {:repository/cliente #ig/ref :repository/cliente}}}
+  :app-context {:repository/cliente #ig/ref :repository/cliente
+                :repository/produto #ig/ref :repository/produto}}}

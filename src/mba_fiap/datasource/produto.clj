@@ -18,7 +18,8 @@
       (hs/format {:insert-into :produto
                   :values [{:nome (:nome produto)
                             :descricao (:descricao produto)
-                            :preco (:preco produto)}]})
+                            :categoria (name (:categoria produto))
+                            :preco_centavos (:preco-centavos produto)}]})
       {:return-keys true}))
 
 

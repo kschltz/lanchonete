@@ -43,7 +43,8 @@
 (.criar (repository :repository/produto)
         {:nome "novo-produto"
         :descricao "descricao"
-        :preco 0.40}
+        :categoria :lanche
+        :preco-centavos 400}
 ))
 
 
@@ -57,5 +58,25 @@
   (hc/post "http://localhost:8080/cliente" {:headers {"Content-Type" "application/json"}
                                             :body "{\"cpf\": \"04373360189\"}"}))
 
-(defn get-cliente [cpf]
+
+(defn get-cliente
+  [cpf]
   (hc/get (str "http://localhost:8080/cliente/" cpf)))
+
+
+(defn get-produtos
+  []
+  (-> (hc/get "http://localhost:8080/produto" {:headers {"Content-Type" "application/json"}})
+      (doto tap>)))
+
+
+(defn portal
+  []
+  (eval '(do
+           (require '[portal.api :as api])
+           (add-tap api/submit)
+           (api/open))))
+
+
+(comment
+  (get-produtos))

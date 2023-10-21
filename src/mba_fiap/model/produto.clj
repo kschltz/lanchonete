@@ -4,24 +4,11 @@
 
 
 (def Categorias
-  [:one-of :lanche :bebida :acompanhamento :sobremesa])
+  [:enum :lanche :sobremesa :acompanhamento :bebida])
 
 
 (def Produto
   [:map  [:nome string?]
-   [:descricao string?]
-   [:preco float?]
-   [:categoria [:enum :lanche :sobremesa :acompanhamento :bebida]]])
-
-
-(defn valid?
-  [product]
-  (m/validate Produto product))
-
-
-(comment
-(def produto {:nome "X-Tudo"
-         :descricao "Pão, carne, queijo, ovo, bacon, alface, tomate, maionese"
-         :preco 25.00
-         :categoria  (keyword "lanche")})
-(valid? produto))
+   [:descricao {:optional true} string?]
+   [:preco-centavos pos-int?]
+   [:categoria Categorias]])
