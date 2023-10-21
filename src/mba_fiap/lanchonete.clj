@@ -8,9 +8,11 @@
     [mba-fiap.datasource.cliente]))
 
 (def ^:const system-filename "config.edn")
+
 (defmethod aero.core/reader 'ig/ref
   [{:keys [profile] :as opts} _tag value]
   (integrant.core/ref value))
+
 (defn read-config [profile]
   (aero/read-config (io/resource system-filename) {:profile profile}))
 

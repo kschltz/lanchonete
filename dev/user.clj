@@ -40,7 +40,7 @@
 (comment
 (.listar (repository :repository/cliente) {})
 (.listar (repository :repository/produto) {})
-(.criar (repository :repository/produto) 
+(.criar (repository :repository/produto)
         {:nome "novo-produto"
         :descricao "descricao"
         :preco 0.40}
@@ -56,3 +56,6 @@
   []
   (hc/post "http://localhost:8080/cliente" {:headers {"Content-Type" "application/json"}
                                             :body "{\"cpf\": \"04373360189\"}"}))
+
+(defn get-cliente [cpf]
+  (hc/get (str "http://localhost:8080/cliente/" cpf)))

@@ -9,11 +9,14 @@
 
 (defn context-interceptor [context]
   (interceptor/on-request #(assoc % :app-context context)))
+(def response-json-body
+  (interceptor/on-response #(update % :body json/write-str)))
+
 
 (defn routes []
   (route/expand-routes
-    [[["/" {:get `prn}]
-      (cliente-rest/cliente-routes)]]))
+    (into []
+          [(cliente-rest/cliente-routes)])))
 
 (defn server [{:keys [env port join? app-context]}]
   (let [ctx-interceptor (context-interceptor app-context)]
@@ -28,6 +31,7 @@
                             #(vec
                                (concat %
                                        [ctx-interceptor
+                                        response-json-body
                                         ])))
             (or (= :dev env)
                 (= :test env)) http/dev-interceptors
