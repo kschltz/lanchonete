@@ -65,8 +65,10 @@
 
 
 (defn get-produtos
-  []
-  (-> (hc/get "http://localhost:8080/produto" {:headers {"Content-Type" "application/json"}})
+  [categoria]
+  (-> (hc/get
+        (str "http://localhost:8080/produto/" categoria)
+        {:headers {"Content-Type" "application/json"}})
       (doto tap>)))
 
 
@@ -79,4 +81,4 @@
 
 
 (comment
-  (get-produtos))
+  (get-produtos "lanche"))

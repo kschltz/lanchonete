@@ -7,7 +7,16 @@
 
 (defn listar-produtos
   [request]
-  (tap> request)
+  (let [_ (tap> request)
+        repository (get-in request [:app-context :repository/produto])
+        categoria (get-in request [:path-params :categoria])
+        result (produto.service/listar-produto repository categoria)]
+    {:status 200
+     :body result}))
+
+
+#_(defn criar-produto
+  [request]
   (let [_ (tap> request)
         repository (get-in request [:app-context :repository/produto])
         result (produto.service/listar-produto repository)]
@@ -17,5 +26,5 @@
 
 (defn produto-routes
   []
-  [["/produto" ^:interceptors [(body-params/body-params)]
+  [["/produto/:categoria" ^:interceptors [(body-params/body-params)]
     {:get `listar-produtos}]])

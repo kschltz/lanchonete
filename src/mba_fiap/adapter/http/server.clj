@@ -14,8 +14,15 @@
   (interceptor/on-request #(assoc % :app-context context)))
 
 
-(def response-json-body
+(def parse-json-body-interceptor
   (interceptor/on-response #(update % :body json/write-str)))
+
+
+(def tap-error-interceptor
+  (interceptor/after
+    (fn [x]
+      (tap> [::dev-logging x])
+      x)))
 
 
 (defn routes
@@ -24,6 +31,13 @@
     (into []
           [(cliente-rest/cliente-routes)
            (produto-rest/produto-routes)])))
+
+
+(defn add-interceptors
+  [service-map & interceptors]
+  (update service-map
+          :io.pedestal.http/interceptors
+          #(vec (concat % interceptors))))
 
 
 (defn server
@@ -36,13 +50,10 @@
              ::http/join? join?
              ::http/port port}
       :always http/default-interceptors
-      :always (update :io.pedestal.http/interceptors
-                      #(vec
-                         (concat %
-                                 [ctx-interceptor
-                                  response-json-body])))
+      :always (add-interceptors ctx-interceptor parse-json-body-interceptor)
       (or (= :dev env)
-          (= :test env)) http/dev-interceptors
+          (= :test env)) (-> http/dev-interceptors
+                             (add-interceptors tap-error-interceptor))
       :then http/create-server)))
 
 
