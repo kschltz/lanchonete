@@ -41,6 +41,16 @@
          (jdbc/execute! connection)))
 
 
+  (atualizar
+    [_ data]
+    (jdbc/execute!
+      connection
+      (hs/format {:update :produto
+                  :set data
+                  :where [:= :id (:id data)]})
+      {:return-keys true}))
+
+
   (remover
     [_ id]
     (->> {:delete-from :produto

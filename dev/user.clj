@@ -68,7 +68,7 @@
 (defn get-produtos
   [categoria]
   (-> (hc/get
-        (str "http://localhost:8080/produto/" categoria)
+        (str "http://localhost:8080/produtos/" categoria)
         {:headers {"Content-Type" "application/json"}})
       (doto tap>)))
 
@@ -80,6 +80,21 @@
                                                                    :descricao "Sandubinha do bem"
                                                                    :categoria "lanche"
                                                                    :preco-centavos 4400})}))
+
+
+(defn deletar-produto
+  [id]
+  (hc/delete (str "http://localhost:8080/produto/" id)))
+
+
+(defn editar-produto
+  [id]
+  (hc/put (str "http://localhost:8080/produto/" id)
+          {:headers {"content-type" "application/json"}
+           :body (json/write-str {:nome "Novo sanduba editado"
+                                  :descricao "Novo sanduba editado"
+                                  :categoria "lanche"
+                                  :preco-centavos 4750})}))
 
 
 (defn portal

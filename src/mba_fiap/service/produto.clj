@@ -18,6 +18,21 @@
                        :order-by [[:categoria :asc]]}))
 
 
+(def ProdutoUpdate (validation/->update-schema produto/Produto))
+
+
+(defn editar-produto
+  [^Repository repository data]
+  {:pre [(instance? Repository repository)
+         (validation/schema-check ProdutoUpdate data)]}
+  (let [[{:produto/keys [id nome descricao categoria preco-centavos]}] (.atualizar repository data)]
+    {:id id
+     :nome nome
+     :descricao descricao
+     :categoria categoria
+     :preco-centavos preco-centavos}))
+
+
 (defn criar-produto
   [^Repository repository data]
   {:pre [(instance? Repository repository)
@@ -28,3 +43,10 @@
      :descricao descricao
      :categoria categoria
      :preco-centavos preco-centavos}))
+
+
+(defn deletar-produto
+  [^Repository repository id]
+  {:pre [(instance? Repository repository)
+         (uuid? id)]}
+  (.remover repository id))
