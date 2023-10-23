@@ -25,24 +25,24 @@
   [^Repository repository data]
   {:pre [(instance? Repository repository)
          (validation/schema-check ProdutoUpdate data)]}
-  (let [[{:produto/keys [id nome descricao categoria preco-centavos]}] (.atualizar repository data)]
+  (let [[{:produto/keys [id nome descricao categoria preco_centavos]}] (.atualizar repository data)]
     {:id id
      :nome nome
      :descricao descricao
      :categoria categoria
-     :preco-centavos preco-centavos}))
+     :preco-centavos preco_centavos}))
 
 
 (defn criar-produto
   [^Repository repository data]
   {:pre [(instance? Repository repository)
          (validation/schema-check produto/Produto data)]}
-  (let [[{:produto/keys [id nome descricao categoria preco-centavos]}] (.criar repository data)]
+  (let [[{:produto/keys [id nome descricao categoria preco_centavos]}] (.criar repository data)]
     {:id id
      :nome nome
      :descricao descricao
      :categoria categoria
-     :preco-centavos preco-centavos}))
+     :preco-centavos preco_centavos}))
 
 
 (defn deletar-produto
