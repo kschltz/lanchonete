@@ -12,7 +12,6 @@
 
   (criar
     [_ produto]
-    (println produto)
     (jdbc/execute!
       connection
       (hs/format {:insert-into :produto
