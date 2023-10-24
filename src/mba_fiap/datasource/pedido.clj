@@ -12,7 +12,7 @@
       connection
       (hs/format {:insert-into :pedido
                   :values [{:produtos (:produtos pedido)
-                            :cpf (:cpf cliente)
+                            :cpf (:cpf pedido)
                             :total (:total pedido)
                             :status :aberto}]})
       {:return-keys true}))

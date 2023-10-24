@@ -10,10 +10,9 @@
     [mba_fiap.repository.repository Repository]))
 
 
-
 (defn mock-repository [store]
   (proxy [Repository] []
-    (listar [q]
+    (listar [_q]
       (let [data @store]
         data))))
 
@@ -21,7 +20,7 @@
   (let [pedidos-schema [:vector {:min 1} pedido/Pedido]]
     (mg/generator pedidos-schema)))
 
-(defspec buscar-por-cpf-test 100
+(defspec listar-pedidos-test 100
   (prop/for-all [pedidos (gen-pedidos)]
     (let [store (atom pedidos)
           repository (mock-repository store)]
