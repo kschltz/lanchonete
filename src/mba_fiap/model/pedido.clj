@@ -1,13 +1,21 @@
-(ns mba-fiap.model.pedido
-  (:require
-    [malli.core :as m]))
+(ns mba-fiap.model.pedido)
 
 
 (def Produtos
-  [:map
-   [:id :uuid]])
+  [:vector {:min 1 :max 3}
+   [:and int? [:> 0]]])
+
+(def Status
+  [:enum
+   "aguardando pagamento"
+   "recebido"
+   "em preparo"
+   "pronto"
+   "finalizado"])
 
 (def Pedido
-  [[:id string?]
+  [:map
+   [:cpf {:optional true} string?]
    [:produtos Produtos]
-   [:total int?]])
+   [:total pos-int?]
+   [:status Status]])
