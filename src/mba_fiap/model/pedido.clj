@@ -1,9 +1,8 @@
 (ns mba-fiap.model.pedido)
 
-
 (def Produtos
   [:vector {:min 1 :max 3}
-   [:and int? [:> 0]]])
+   uuid?])
 
 (def Status
   [:enum
@@ -16,6 +15,8 @@
 (def Pedido
   [:map
    [:cpf {:optional true} string?]
+   [:email {:optional true} string?]
    [:produtos Produtos]
+   [:numero-do-pedido pos-int?]
    [:total pos-int?]
    [:status Status]])

@@ -6,15 +6,19 @@
 
 
 (defn cadastrar-pedido [request]
+  (println "chamado cadastrar")
   (let [repository (get-in request [:app-context :repository/pedido])
+        _ (println "chamada p'os repo " repository)
         data       (:json-params request)
+        _ (println "chamada pos data " data)
         result     (pedido.service/checkout repository data)]
     {:status  200
      :headers {"Content-Type" "application/json"}
      :body    result}))
 
 (defn listar-pedidos [request]
-  (let [repository (get-in request [:app-context :repository/cliente])
+  (println "chamou?")
+  (let [repository (get-in request [:app-context :repository/pedido])
         result (pedido.service/listar-pedidos repository)]
     {:status 200
      :headers {"Content-Type" "application/json"}
@@ -26,7 +30,7 @@
                                middlewares/keyword-params]
     {:post `cadastrar-pedido}]
    ["/pedidos" ^:interceptors [(body-params/body-params)
-                              middlewares/params
-                              middlewares/keyword-params]
+                               middlewares/params
+                               middlewares/keyword-params]
     {:get `listar-pedidos}]])
 

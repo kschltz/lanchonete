@@ -6,7 +6,8 @@
     [io.pedestal.http.route :as route]
     [io.pedestal.interceptor.helpers :as interceptor]
     [mba-fiap.adapter.cliente-rest :as cliente-rest]
-    [mba-fiap.adapter.produto-rest :as produto-rest]))
+    [mba-fiap.adapter.produto-rest :as produto-rest]
+    [mba-fiap.adapter.pedido-rest :as pedido-rest]))
 
 
 (defn context-interceptor
@@ -30,7 +31,8 @@
   (route/expand-routes
     (into []
           [(cliente-rest/cliente-routes)
-           (produto-rest/produto-routes)])))
+           (produto-rest/produto-routes)
+           (pedido-rest/pedido-routes)])))
 
 
 (defn add-interceptors

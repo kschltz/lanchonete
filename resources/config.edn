@@ -21,7 +21,6 @@
  {:repository-name :cliente
   :connection #ig/ref :mba-fiap.datasource.postgres/db}
 
-
  [:mba-fiap.repository.repository/repository :repository/produto]
  {:repository-name :produto
   :connection #ig/ref :mba-fiap.datasource.postgres/db}

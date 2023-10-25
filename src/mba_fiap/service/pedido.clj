@@ -8,9 +8,10 @@
 (defn checkout [^Repository repository data]
   {:pre [(instance? Repository repository)
          (validation/schema-check pedido/Pedido data)]}
-  ;; TODO: Make checkout logic
-  )
+  (println "chamou service checkout")
+  (.criar repository data))
 
 (defn listar-pedidos [^Repository repository]
   {:pre [(instance? Repository repository)]}
-  (.listar repository {}))
+  (println "Listando")
+  (.listar repository nil))
