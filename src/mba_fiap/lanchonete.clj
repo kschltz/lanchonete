@@ -6,7 +6,8 @@
     [com.brunobonacci.mulog :as log]
     [integrant.core :as ig]
     [mba-fiap.datasource.cliente]
-    [mba-fiap.datasource.produto]))
+    [mba-fiap.datasource.produto]
+    [mba-fiap.datasource.pedido]))
 
 
 (def ^:const system-filename "config.edn")
