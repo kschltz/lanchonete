@@ -21,9 +21,12 @@
  {:repository-name :cliente
   :connection #ig/ref :mba-fiap.datasource.postgres/db}
 
-
  [:mba-fiap.repository.repository/repository :repository/produto]
  {:repository-name :produto
+  :connection #ig/ref :mba-fiap.datasource.postgres/db}
+
+ [:mba-fiap.repository.repository/repository :repository/pedido]
+ {:repository-name :pedido
   :connection #ig/ref :mba-fiap.datasource.postgres/db}
 
  :mba-fiap.adapter.http.server/server
@@ -35,4 +38,5 @@
                    :dev false}
 
   :app-context {:repository/cliente #ig/ref :repository/cliente
-                :repository/produto #ig/ref :repository/produto}}}
+                :repository/produto #ig/ref :repository/produto
+                :repository/pedido #ig/ref :repository/pedido}}}
