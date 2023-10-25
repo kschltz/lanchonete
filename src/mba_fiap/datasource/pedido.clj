@@ -14,8 +14,7 @@
       (hs/format {:insert-into :pedido
                   :values [{:numero-do-pedido (:numero-do-pedido pedido)
                             :produtos         (:produtos pedido)
-                            :cpf              (:cpf pedido)
-                            :email            (:email pedido)
+                            :id-cliente       (:id-cliente pedido)
                             :total            (:total pedido)
                             :status           :aberto}]})
       {:return-keys true}))

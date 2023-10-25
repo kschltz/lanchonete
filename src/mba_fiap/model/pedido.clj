@@ -14,8 +14,7 @@
 
 (def Pedido
   [:map
-   [:cpf {:optional true} string?]
-   [:email {:optional true} string?]
+   [:id-cliente uuid?]
    [:produtos Produtos]
    [:numero-do-pedido pos-int?]
    [:total pos-int?]

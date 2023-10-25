@@ -7,7 +7,8 @@
 
 (defn cadastrar-pedido [request]
   (println "chamado cadastrar")
-  (let [repository (get-in request [:app-context :repository/pedido])
+  (let [_ (println "app-context " (:app-context request))
+        repository (get-in request [:app-context :repository/pedido])
         _ (println "chamada p'os repo " repository)
         data       (:json-params request)
         _ (println "chamada pos data " data)

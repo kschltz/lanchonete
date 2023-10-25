@@ -113,7 +113,7 @@
 (defn post-pedido
   []
   (hc/post "http://localhost:8080/pedido" {:headers {"content-type" "application/json"}
-                                            :body (json/write-str {:cpf "38168295897"
+                                            :body (json/write-str {:id-cliente "bb4a5c5e-2ed6-4db3-be15-f0f188063c47"
                                                                    :produtos ["bb4a5c5e-2ed6-4db3-be15-f0f188063c47"]
                                                                    :numero-do-pedido 01
                                                                    :total 1000
