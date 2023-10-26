@@ -12,6 +12,10 @@ obs: não esquecer de ativar o ambiente dev no postman
 
 [miro](https://miro.com/app/board/uXjVMg_qpOA=/?share_link_id=776193048301)
 
+### Documentação de Rotas da aplicaçao
+
+[doc](/doc/routes.md)
+
 ## Installation
 
 Download from https://github.com/mba-fiap/lanchonete
