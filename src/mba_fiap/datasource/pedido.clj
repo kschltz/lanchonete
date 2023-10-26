@@ -8,27 +8,26 @@
 (defrecord PedidoDatasource [connection]
   repository/Repository
   (criar [_ pedido]
-    (println "inserindo")
     (jdbc/execute!
       connection
       (hs/format {:insert-into :pedido
                   :values [{:numero-do-pedido (:numero-do-pedido pedido)
-                            :produtos         (:produtos pedido)
+                            :produtos         [:array (:produtos pedido)]
                             :id-cliente       (:id-cliente pedido)
                             :total            (:total pedido)
-                            :status           :aberto}]})
+                            :status           (:status pedido)}]})
       {:return-keys true}))
+
 
   (buscar
     [_ id]
     (->> {:select [:*]
-          :from :pedido
-          :where [:= :id id]}
+          :from   :pedido
+          :where  [:= :id id]}
          hs/format
          (jdbc/execute-one! connection)))
 
   (listar [_ q]
-    (println "query listar...")
     (->> (merge {:select [:*]
                  :from :pedido
                  :limit 100} q)

@@ -42,6 +42,16 @@
 (.listar (repository :repository/cliente) {})
 (.listar (repository :repository/produto) {})
 (.listar (repository :repository/pedido) {})
+(.criar (repository :repository/pedido)
+        {:id-cliente       #uuid "236d3142-e4a7-4c23-976c-34454d8db1fc",
+         :produtos
+         [#uuid "f11c6b18-89fb-461a-9d76-9c59d9262f23"
+          #uuid "4e5ce39e-e30e-48e9-a763-f2a2f2fdcd68"
+          #uuid "b800c75e-18af-4d31-a7f1-6f5b3a457903"],
+         :numero-do-pedido "2",
+         :total            2000,
+         :status           "aguardando pagamento"})
+
 (.criar (repository :repository/produto)
         {:nome "novo-produto"
         :descricao "descricao"
@@ -113,11 +123,13 @@
 (defn post-pedido
   []
   (hc/post "http://localhost:8080/pedido" {:headers {"content-type" "application/json"}
-                                            :body (json/write-str {:id-cliente "bb4a5c5e-2ed6-4db3-be15-f0f188063c47"
-                                                                   :produtos ["bb4a5c5e-2ed6-4db3-be15-f0f188063c47"]
-                                                                   :numero-do-pedido 01
-                                                                   :total 1000
-                                                                   :status "aguardando pagamento"}
-                                                                  )}))
+                                            :body (json/write-str {:id-cliente #uuid "236d3142-e4a7-4c23-976c-34454d8db1fc",
+                                                                   :produtos
+                                                                   [#uuid "f11c6b18-89fb-461a-9d76-9c59d9262f23"
+                                                                    #uuid "4e5ce39e-e30e-48e9-a763-f2a2f2fdcd68"
+                                                                    #uuid "b800c75e-18af-4d31-a7f1-6f5b3a457903"],
+                                                                   :numero-do-pedido "2",
+                                                                   :total 2000,
+                                                                   :status "aguardando pagamento"})}))
 
 

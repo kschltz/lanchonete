@@ -16,6 +16,6 @@
   [:map
    [:id-cliente uuid?]
    [:produtos Produtos]
-   [:numero-do-pedido pos-int?]
+   [:numero-do-pedido string?]
    [:total pos-int?]
    [:status Status]])
