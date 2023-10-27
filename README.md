@@ -22,35 +22,24 @@ Download from https://github.com/mba-fiap/lanchonete
 
 ## Usage
 
+### Docker compose
+    $ docker-compose up --build
+
+### Clojure
 Run the project in dev environment:
 
     $ clojure -A:dev:test
 
-Run the project directly, via `:exec-fn`:
-
-    $ clojure -X:run-x
-    Hello, Clojure!
-
-Run the project, overriding the name to be greeted:
-
-    $ clojure -X:run-x :name '"Someone"'
-    Hello, Someone!
-
 Run the project directly, via `:main-opts` (`-m mba-fiap.lanchonete`):
 
     $ clojure -M:run-m
-    Hello, World!
 
-Run the project, overriding the name to be greeted:
 
-    $ clojure -M:run-m Via-Main
-    Hello, Via-Main!
-
-Run the project's tests (they'll fail until you edit them):
+Run the project's tests:
 
     $ clojure -T:build test
 
-Run the project's CI pipeline and build an uberjar (this will fail until you edit the tests to pass):
+Run the project's CI pipeline and build an uberjar:
 
     $ clojure -T:build ci
 
@@ -66,19 +55,7 @@ Run that uberjar:
 
     $ java -jar target/lanchonete-0.1.0-SNAPSHOT.jar
 
-## Examples
 
-...
-
-### Bugs
-
-...
-
-### Any Other Sections
-
-### That You Think
-
-### Might be Useful
 
 ## License
 

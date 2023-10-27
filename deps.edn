@@ -20,10 +20,7 @@
  {:dev {:extra-paths ["dev"]
         :extra-deps {hato/hato {:mvn/version "0.9.0"}
                      djblue/portal {:mvn/version "0.48.0"}}}
-  :run-m {:main-opts ["-m" "mba-fiap.lanchonete"]}
-  :run-x {:ns-default mba-fiap.lanchonete
-          :exec-fn greet
-          :exec-args {:name "Clojure"}}
+  :run-m {:main-opts ["-m" "mba-fiap.lanchonete" "prod"]}
   :build {:deps {io.github.clojure/tools.build {:mvn/version "0.9.4"}}
           :ns-default build}
   :test {:extra-paths ["test"]
