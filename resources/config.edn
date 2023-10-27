@@ -37,6 +37,7 @@
   :join? #profile {:default true
                    :dev false}
 
-  :app-context {:repository/cliente #ig/ref :repository/cliente
+  :app-context {:migrations #ig/ref :mba-fiap.datasource.migratus/migratus
+                :repository/cliente #ig/ref :repository/cliente
                 :repository/produto #ig/ref :repository/produto
                 :repository/pedido #ig/ref :repository/pedido}}}
