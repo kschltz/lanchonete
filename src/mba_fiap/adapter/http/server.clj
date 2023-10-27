@@ -44,13 +44,15 @@
 
 (defn server
   [{:keys [env port join? app-context]}]
+  (println "Starting server")
   (let [ctx-interceptor (context-interceptor app-context)]
     (cond-> {:env env
              ::http/routes (routes)
              ::http/resource-path "/public"
              ::http/type :jetty
              ::http/join? join?
-             ::http/port port}
+             ::http/port port
+             ::http/host "0.0.0.0"}
       :always http/default-interceptors
       :always (add-interceptors ctx-interceptor parse-json-body-interceptor)
       (or (= :dev env)
