@@ -23,6 +23,8 @@ Download from https://github.com/mba-fiap/lanchonete
 ## Usage
 
 ### Docker compose
+From the root of the project, run:
+
     $ docker-compose up --build
 
 ### Clojure
