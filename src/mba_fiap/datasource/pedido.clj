@@ -37,11 +37,10 @@
     (->>
       (merge {:select [:*]
               :from :pedido
-              :order-by ["(status = 'pronto') DESC"
-                         "(status = 'em preparo') DESC"
-                         "(status = 'recebido') DESC"
-                         [:status :desc]
-                         :created_at]
+              :order-by [[[:case [:= :status "pronto"] 1
+                           [:= :status "em preparo"] 2
+                           [:= :status "recebido"] 3
+                           :else 4]]]
               :limit 100} q)
       hs/format
       (jdbc/execute! connection)))
