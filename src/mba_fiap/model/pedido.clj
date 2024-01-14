@@ -6,13 +6,20 @@
    uuid?])
 
 
+(def recebido "recebido")
+(def aguardando-pagamento "aguardando pagamento")
+(def em-preparo "em preparo")
+(def pronto "pronto")
+(def finalizado "finalizado")
+
+
 (def Status
   [:enum
-   "aguardando pagamento"
-   "recebido"
-   "em preparo"
-   "pronto"
-   "finalizado"])
+   aguardando-pagamento
+   recebido
+   em-preparo
+   pronto
+   finalizado])
 
 
 (def Pedido

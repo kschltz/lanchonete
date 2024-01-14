@@ -1,6 +1,7 @@
 (ns mba-fiap.datasource.pedido
   (:require
     [honey.sql :as hs]
+    [mba-fiap.model.pedido :as m.pedido]
     [mba-fiap.repository.repository :as repository]
     [next.jdbc :as jdbc]))
 
@@ -37,10 +38,12 @@
     (->>
       (merge {:select [:*]
               :from :pedido
-              :order-by [[[:case [:= :status "pronto"] 1
-                           [:= :status "em preparo"] 2
-                           [:= :status "recebido"] 3
-                           :else 4]]]
+              :where [:not= :status m.pedido/finalizado]
+              :order-by [[[:case [:= :status m.pedido/pronto] 1
+                           [:= :status m.pedido/em-preparo] 2
+                           [:= :status m.pedido/recebido] 3
+                           :else 4]]
+                         :created-at]
               :limit 100} q)
       hs/format
       (jdbc/execute! connection)))
