@@ -51,6 +51,13 @@
          :numero-do-pedido "2",
          :total            2000,
          :status           "aguardando pagamento"})
+(.atualizar (repository :repository/pedido)
+        {:id #uuid"fbb98663-77ab-4560-a065-6b9b833c190f"
+         :id-cliente       #uuid "336d3142-e4a7-4c23-976c-34454d8db1fc",
+         :produtos [#uuid "f11c6b18-89fb-461a-9d76-9c59d9262f23"]
+         :numero-do-pedido "5",
+         :total            2000,
+         :status           "aguardando pagamento"})
 
 (.criar (repository :repository/produto)
         {:nome "novo-produto"
