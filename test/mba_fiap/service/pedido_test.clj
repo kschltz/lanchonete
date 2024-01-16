@@ -9,35 +9,32 @@
   (:import
     [mba_fiap.repository.repository Repository]))
 
-; FIXME: corrigir teste pois o postgres retornar um objeto array em produtos.
+(defn mock-repository [store]
+  (proxy [Repository] []
+    (listar [_q]
+      (let [data @store]
+        data))
+    (criar [data]
+      (swap! store assoc (:cpf data) data)
+      [#:pedido{:id (random-uuid)
+                :id-cliente (:id-cliente data)
+                :numero-do-pedido (:numero_do_pedido data)
+                :produtos (:produtos data)
+                :status (:status data)
+                :total (:total data)}])))
 
+(defn gen-pedidos []
+  (let [pedidos-schema [:vector {:min 1} pedido/Pedido]]
+    (mg/generator pedidos-schema)))
 
-;(defn mock-repository [store]
-;  (proxy [Repository] []
-;    (listar [_q]
-;      (let [data @store]
-;        data))
-;    (criar [data]
-;      (swap! store assoc (:cpf data) data)
-;      [#:pedido{:id (random-uuid)
-;                :id-cliente (:id-cliente data)
-;                :numero-do-pedido (:numero_do_pedido data)
-;                :produtos (:produtos data)
-;                :status (:status data)
-;                :total (:total data)}])))
-;
-;(defn gen-pedidos []
-;  (let [pedidos-schema [:vector {:min 1} pedido/Pedido]]
-;    (mg/generator pedidos-schema)))
-;
-;(defspec all-valid-pedidos-inserted 2
-;  (prop/for-all [pedido (mg/generator pedido/Pedido)]
-;    (let [store (atom {})
-;          repository (mock-repository store)]
-;      (boolean (pedido.service/checkout repository pedido)))))
-;
-;(defspec listar-pedidos-test 2
-;  (prop/for-all [pedidos (gen-pedidos)]
-;    (let [store (atom pedidos)
-;          repository (mock-repository store)]
-;      (boolean (pedido.service/listar-pedidos repository)))))
+(defspec all-valid-pedidos-inserted 2
+  (prop/for-all [pedido (mg/generator pedido/Pedido)]
+    (let [store (atom {})
+          repository (mock-repository store)]
+      (boolean (pedido.service/checkout repository pedido)))))
+
+(defspec listar-pedidos-test 2
+  (prop/for-all [pedidos (gen-pedidos)]
+    (let [store (atom pedidos)
+          repository (mock-repository store)]
+      (boolean (pedido.service/listar-pedidos repository)))))
