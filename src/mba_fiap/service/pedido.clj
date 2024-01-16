@@ -11,7 +11,7 @@
   [a]
   (if (coll? a)
     a
-    (into [] (.getArray a))))
+    (into [] (and a (.getArray a)))))
 
 
 (defn ^:private pg->pedido
@@ -39,8 +39,11 @@
 
 
 (defn listar-pedidos
-  [^Repository repository usecase]
-  {:pre [(instance? Repository repository)]}
-  (let [result (.listar repository usecase)
-        pedidos (mapv pg->pedido result)]
-    pedidos))
+  ([^Repository repository]
+   {:pre [(instance? Repository repository)]}
+   (listar-pedidos repository {}))
+  ([^Repository repository query]
+   {:pre [(instance? Repository repository)]}
+   (let [result (.listar repository query)
+         pedidos (mapv pg->pedido result)]
+     pedidos)))
