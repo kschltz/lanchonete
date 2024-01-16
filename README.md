@@ -25,7 +25,7 @@ Download from https://github.com/mba-fiap/lanchonete
 ### Kubernetes
 You can run/deploy the project in Kubernetes using the following command:
 
-    $ kubectl apply -f k8s/
+    $ kubectl apply -f k8s/postgre/ && kubectl apply -f k8s/lanchonete/
 
 ### Docker compose
 From the root of the project, run:
