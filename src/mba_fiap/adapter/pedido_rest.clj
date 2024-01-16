@@ -1,11 +1,13 @@
 (ns mba-fiap.adapter.pedido-rest
   (:require
-    [mba-fiap.service.pedido :as pedido.service]
     [io.pedestal.http.body-params :as body-params]
-    [io.pedestal.http.ring-middlewares :as middlewares]))
+    [io.pedestal.http.ring-middlewares :as middlewares]
+    [mba-fiap.service.pedido :as pedido.service]
+    [mba-fiap.usecase.listar-pedido :as usecase.p]))
 
 
-(defn cadastrar-pedido [request]
+(defn cadastrar-pedido
+  [request]
   (let [repository (get-in request [:app-context :repository/pedido])
         data       (:json-params request)
         parsed-data (-> data
@@ -16,17 +18,21 @@
      :headers {"Content-Type" "application/json"}
      :body    result}))
 
-(defn listar-pedidos [request]
+
+(defn listar-pedidos
+  [request]
   (let [repository (get-in request [:app-context :repository/pedido])
-        result (pedido.service/listar-pedidos repository)]
+        result (pedido.service/listar-pedidos repository (usecase.p/listar-pedidos-abertos))]
     {:status 200
      :headers {"Content-Type" "application/json"}
      :body result}))
 
-(defn pedido-routes []
+
+(defn pedido-routes
+  []
   [["/pedido" ^:interceptors [(body-params/body-params)
-                               middlewares/params
-                               middlewares/keyword-params]
+                              middlewares/params
+                              middlewares/keyword-params]
     {:post `cadastrar-pedido}]
    ["/pedidos" ^:interceptors [(body-params/body-params)
                                middlewares/params

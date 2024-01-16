@@ -1,13 +1,17 @@
 (ns mba-fiap.datasource.pedido
   (:require
     [honey.sql :as hs]
-    [next.jdbc :as jdbc]
-    [mba-fiap.repository.repository :as repository]))
+    [mba-fiap.repository.repository :as repository]
+    [next.jdbc :as jdbc]))
 
 
-(defrecord PedidoDatasource [connection]
+(defrecord PedidoDatasource
+  [connection]
+
   repository/Repository
-  (criar [_ pedido]
+
+  (criar
+    [_ pedido]
     (jdbc/execute!
       connection
       (hs/format {:insert-into :pedido
@@ -27,12 +31,16 @@
          hs/format
          (jdbc/execute-one! connection)))
 
-  (listar [_ q]
-    (->> (merge {:select [:*]
-                 :from :pedido
-                 :limit 100} q)
-         hs/format
-         (jdbc/execute! connection)))
+
+  (listar
+    [_ q]
+    (->>
+      (merge {:select [:*]
+              :from :pedido
+              :limit 100} q)
+      hs/format
+      (jdbc/execute! connection)))
+
 
   (atualizar
     [_ data]
@@ -43,12 +51,14 @@
                   :where [:= :id (:id data)]})
       {:return-keys true}))
 
+
   (remover
     [_ id]
     (->> {:delete-from :pedido
           :where [[:= :id id]]}
          hs/format
          (jdbc/execute-one! connection))))
+
 
 (defmethod repository/make-repository :pedido
   [{:keys [connection]}]

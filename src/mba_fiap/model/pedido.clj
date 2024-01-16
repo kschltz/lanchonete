@@ -1,16 +1,26 @@
 (ns mba-fiap.model.pedido)
 
+
 (def Produtos
   [:vector {:min 1 :max 3}
    uuid?])
 
+
+(def recebido "recebido")
+(def aguardando-pagamento "aguardando pagamento")
+(def em-preparo "em preparo")
+(def pronto "pronto")
+(def finalizado "finalizado")
+
+
 (def Status
   [:enum
-   "aguardando pagamento"
-   "recebido"
-   "em preparo"
-   "pronto"
-   "finalizado"])
+   aguardando-pagamento
+   recebido
+   em-preparo
+   pronto
+   finalizado])
+
 
 (def Pedido
   [:map
@@ -18,4 +28,5 @@
    [:produtos Produtos]
    [:numero-do-pedido string?]
    [:total pos-int?]
-   [:status Status]])
+   [:status Status]
+   [:created-at string?]])
