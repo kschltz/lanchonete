@@ -47,3 +47,16 @@
    (let [result (.listar repository query)
          pedidos (mapv pg->pedido result)]
      pedidos)))
+
+(def PedidoUpdate (validation/->update-schema pedido/Pedido))
+(defn editar-pedido
+  [^Repository repository data]
+  {:pre [(instance? Repository repository)
+         (validation/schema-check PedidoUpdate data)]}
+  (let [[{:pedido/keys [id id_cliente numero_do_pedido produtos status total]}] (.atualizar repository data)]
+    {:id id
+     :id-cliente id_cliente
+     :numero-do-pedido numero_do_pedido
+     :produtos (into [] (.getArray produtos))
+     :status status
+     :total total}))
