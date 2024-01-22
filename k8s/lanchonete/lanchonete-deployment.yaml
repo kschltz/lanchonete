@@ -1,0 +1,27 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lanchonete  # Sets Deployment name
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lanchonete
+  template:
+    metadata:
+      labels:
+        app: lanchonete
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: lanchonete
+          image: kschltz/fiap-pos:0.5 # Sets Image
+          imagePullPolicy: "Always"
+          ports:
+            - containerPort: 8080 # Exposes container port
+              name: lanchonete-port
+          envFrom:
+            - configMapRef:
+                name: lanchonete-config

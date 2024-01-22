@@ -1,10 +1,12 @@
 (ns mba-fiap.datasource.postgres
-  (:require [integrant.core :as ig]
+  (:require [clojure.tools.logging :as log]
+            [integrant.core :as ig]
             [next.jdbc :as jdbc]))
 
 (defmethod ig/init-key ::db
   [_ {:keys [spec]
       :as component}]
+  (println "Initializing database connection: " component)
   (assoc
     component
     :datasource
