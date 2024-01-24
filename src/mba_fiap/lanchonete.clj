@@ -1,27 +1,24 @@
 (ns mba-fiap.lanchonete
   (:gen-class)
   (:require
-    [aero.core :as aero]
-    [clojure.java.io :as io]
-    [com.brunobonacci.mulog :as log]
-    [integrant.core :as ig]
-    [mba-fiap.datasource.cliente]
-    [mba-fiap.datasource.produto]
-    [mba-fiap.datasource.pedido]))
-
+   [aero.core :as aero]
+   [clojure.java.io :as io]
+   [com.brunobonacci.mulog :as log]
+   [integrant.core :as ig]
+   [mba-fiap.datasource.cliente]
+   [mba-fiap.datasource.produto]
+   [mba-fiap.datasource.pedido]
+   [mba-fiap.datasource.pagamento]))
 
 (def ^:const system-filename "config.edn")
-
 
 (defmethod aero.core/reader 'ig/ref
   [{:keys [profile] :as opts} _tag value]
   (integrant.core/ref value))
 
-
 (defn read-config
   [profile]
   (aero/read-config (io/resource system-filename) {:profile profile}))
-
 
 (defn prep-config
   [profile]
@@ -29,13 +26,11 @@
     (ig/load-namespaces config-map)
     (ig/prep config-map)))
 
-
 (defn start-app
   [profile]
   (log/start-publisher! {:type :console})
   (-> (prep-config profile)
       (ig/init)))
-
 
 (defn -main
   [& args]
