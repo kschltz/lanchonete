@@ -11,12 +11,13 @@
 
   (criar
     [_ data]
-    (jdbc/execute!)
-    connection
-    (hs/format {:insert-into :pagamento
-                :values [{:id_pedido (:id-pedido data)
-                          :total (:total data)}]})
-    {:return-keys true})
+    (jdbc/execute!
+      connection
+      (hs/format {:insert-into :pagamento
+                  :values      [{:id_pedido (:id-pedido data)
+                                 :total     (:total data)
+                                 :status    (:status data)}]}
+                 {:return-keys true})))
 
   (buscar
     [_ id]

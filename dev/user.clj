@@ -42,6 +42,7 @@
 (.listar (repository :repository/cliente) {})
 (.listar (repository :repository/produto) {})
 (.listar (repository :repository/pedido) {})
+(.listar (repository :repository/pagamento) {})
 (.criar (repository :repository/pedido)
         {:id-cliente       #uuid "236d3142-e4a7-4c23-976c-34454d8db1fc",
          :produtos
@@ -64,7 +65,14 @@
         :descricao "descricao"
         :categoria :lanche
         :preco-centavos 400}
-))
+)
+
+(.criar (repository :repository/pagamento)
+        {:id-pedido #uuid"f1429128-0418-4a87-b19a-b5454b167727"
+         :total 12345
+         :status "em processamento"}
+        )
+)
 
 
 (defn add-migration
@@ -138,5 +146,11 @@
                                                                    :numero-do-pedido "2",
                                                                    :total 2000,
                                                                    :status "aguardando pagamento"})}))
+
+(defn post-confirmacao-pagamento
+  []
+  (hc/post "http://localhost:8080/confirmacao-pagamento/f1429128-0418-4a87-b19a-b5454b167727"
+           {:headers {"content-type" "application/json"}
+            :body    (json/write-str {:status "pago"})}))
 
 

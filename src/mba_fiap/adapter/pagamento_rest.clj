@@ -14,9 +14,23 @@
      :headers {"Content-Type" "application/json"}
      :body result}))
 
+(defn confirmacao-pagamento
+  [request]
+  (let [repository (get-in request [:app-context :repository/pagamento])
+        id (get-in request [:path-params :id])
+        status (get-in request [:json-params :status])
+        result (pagamento.service/confirmacao-pagamento repository id status)]
+    {:status  200
+     :headers {"Content-Type" "application/json"}
+     :body    result}))
+
 (defn pagamento-routes
   []
   [["/pagamento/:id-pedido" ^:interceptors [(body-params/body-params)
                                             middlewares/params
                                             middlewares/keyword-params]
-    {:get `buscar-pagamento-por-id-pedido}]])
+    {:get `buscar-pagamento-por-id-pedido}]
+   ["/pagamento/confirmacao-pagamento/:id-pedido" ^:interceptors [(body-params/body-params)
+                                                                  middlewares/params
+                                                                  middlewares/keyword-params]
+    {:put `confirmacao-pagamento}]])
