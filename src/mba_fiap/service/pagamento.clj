@@ -1,6 +1,9 @@
 (ns mba-fiap.service.pagamento
+  (:require
+    [mba-fiap.base.validation :as validation]
+    [mba-fiap.model.pagamento :as pagamento])
   (:import
-   [mba_fiap.repository.repository Repository]))
+    [mba_fiap.repository.repository Repository]))
 
 (defn buscar-por-id-pedido [^Repository repository id]
   {:pre [(instance? Repository repository)
@@ -14,11 +17,12 @@
        :status status
        :created-at created_at})))
 
-(defn confirmacao-pagamento [^Repository repository id status]
+(defn atualizar-status-pagamento [^Repository repository id-pedido status]
   {:pre [(instance? Repository repository)
-         (uuid? id)]}
-  (let [data {:id id :status status}
-        {:pagamento/keys [id_pedido total created_at status]} (.atualizar repository data)]
+         (uuid? id-pedido)
+         (validation/schema-check pagamento/Status status)]}
+  (let [data {:id-pedido id-pedido :status status}
+        [{:pagamento/keys [id_pedido created_at status total] :as pg}] (.atualizar repository data)]
     {:id-pedido  id_pedido
      :total      total
      :status     status

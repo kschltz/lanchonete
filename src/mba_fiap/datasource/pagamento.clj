@@ -37,16 +37,17 @@
 
   (atualizar
     [_ data]
-    (->> {:update :pagamento
-          :set data
-          :where [:= :id (:id data)]}
-         hs/format
-         (jdbc/execute! connection)))
+    (jdbc/execute!
+      connection
+      (hs/format {:update :pagamento
+                  :set    data
+                  :where  [:= :id-pedido (:id-pedido data)]})
+      {:return-keys true}))
 
   (remover
     [_ id]
     (->> {:delete-from :pagamento
-          :where [:= :id id]}
+          :where [:= :id-pedido id]}
          hs/format
          (jdbc/execute-one! connection))))
 
