@@ -18,7 +18,6 @@
   :db {:dbname #or [#env POSTGRES_DB "postgres"]
        :datasource #ig/ref :mba-fiap.datasource.postgres/db}}
 
-
  [:mba-fiap.repository.repository/repository :repository/cliente]
  {:repository-name :cliente
   :connection #ig/ref :mba-fiap.datasource.postgres/db}
@@ -29,6 +28,10 @@
 
  [:mba-fiap.repository.repository/repository :repository/pedido]
  {:repository-name :pedido
+  :connection #ig/ref :mba-fiap.datasource.postgres/db}
+
+ [:mba-fiap.repository.repository/repository :repository/pagamento]
+ {:repository-name :pagamento
   :connection #ig/ref :mba-fiap.datasource.postgres/db}
 
  :mba-fiap.adapter.http.server/server
@@ -42,4 +45,5 @@
   :app-context {:migrations #ig/ref :mba-fiap.datasource.migratus/migratus
                 :repository/cliente #ig/ref :repository/cliente
                 :repository/produto #ig/ref :repository/produto
-                :repository/pedido #ig/ref :repository/pedido}}}
+                :repository/pedido #ig/ref :repository/pedido
+                :repository/pagamento #ig/ref :repository/pagamento}}}

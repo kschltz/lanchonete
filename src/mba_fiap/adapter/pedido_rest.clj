@@ -3,7 +3,8 @@
     [io.pedestal.http.body-params :as body-params]
     [io.pedestal.http.ring-middlewares :as middlewares]
     [mba-fiap.service.pedido :as pedido.service]
-    [mba-fiap.usecase.listar-pedido :as usecase.p]))
+    [mba-fiap.usecase.listar-pedido :as usecase.p]
+    [medley.core :as medley]))
 
 
 (defn cadastrar-pedido
@@ -27,6 +28,21 @@
      :headers {"Content-Type" "application/json"}
      :body result}))
 
+(defn editar-pedido
+  [request]
+  (let [repository (get-in request [:app-context :repository/pedido])
+        id (get-in request [:path-params :id])
+        data (:json-params request)
+        parsed-data (-> data
+                        (assoc :id id)
+                        (update :id parse-uuid)
+                        (medley/update-existing :id-cliente parse-uuid)
+                        (medley/update-existing :produtos #(mapv parse-uuid %)))
+        result (pedido.service/editar-pedido repository parsed-data)]
+    {:status 200
+     :headers {"Content-Type" "application/json"}
+     :body result}))
+
 
 (defn pedido-routes
   []
@@ -37,5 +53,10 @@
    ["/pedidos" ^:interceptors [(body-params/body-params)
                                middlewares/params
                                middlewares/keyword-params]
-    {:get `listar-pedidos}]])
+    {:get `listar-pedidos}]
+
+   ["/pedido/:id" ^:interceptors [(body-params/body-params)
+                                  middlewares/params
+                                  middlewares/keyword-params]
+    {:put `editar-pedido}]])
 
