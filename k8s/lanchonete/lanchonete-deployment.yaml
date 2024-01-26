@@ -16,8 +16,8 @@ spec:
         - name: regcred
       containers:
         - name: lanchonete
-          image: kschltz/fiap-pos:0.5 # Sets Image
-          imagePullPolicy: "Always"
+          image: lanchonete:latest # Sets Image
+          imagePullPolicy: "IfNotPresent"
           resources:
             limits:
               cpu: 1000m
