@@ -129,8 +129,12 @@
     (apply
       pcalls
       (repeat n-req
-              #(hato.client/get
-                 (str "http://" external-ip ":8080/produtos/lanche"))))))
+              #(do
+                 (let [start (System/currentTimeMillis)
+                       res (hato.client/get (str "http://" external-ip ":8080/produtos/lanche"))
+                       end (System/currentTimeMillis)]
+                   {:response res
+                    :duration (- end start)}))))))
 
 (defn get-pedidos
   []
