@@ -1,8 +1,16 @@
-# Documentação de Rotas da aplicaçao
+# Documentação de Rotas da aplicação
+
+### Recomendação de ordem para execução das APIs
+
+1. Cadastrar um cliente na API de cliente (Opcional)
+2. Cadastrar pelo menos 1 produto na [API de Produto](#produto)
+3. Criar um pedido na [API de pedidos](#pedido) (de preferência, utilize o ID do cliente e do produto criado anteriormente).
+4. Cadastrar pagamento feito na API de [pagamento](#pagamento)
+5. Atualizar o status de pagamento de um pedido na API de [pagamento](#pagamento)
 
 ### Produto
 
-Rotas responsável pela manuteção de produtos no sistema;
+Rotas responsável pela manutenção de produtos no sistema;
 
 #### Listar Produtos por categoria
 
@@ -53,6 +61,8 @@ Rotas com definições para manutenção de pedidos no sistema;
 
 #### Cadastrar Pedido
 
+- possíveis status: `aguardando-pagamento`, `recebido`, `em-preparo`, `pronto`, `finalizado`;
+
 ```cURL
 curl --location 'http://localhost:8080/pedido' \
 --header 'Content-Type: application/json' \
@@ -69,4 +79,36 @@ curl --location 'http://localhost:8080/pedido' \
 
 ```cURL
 curl --location 'http://localhost:8080/pedidos'
+```
+
+#### Atualizar Pedidos
+
+```cURL
+curl --location PUT 'http://localhost:8080/pedido/{{pedido_id}}'
+--header 'Content-Type: application/json' 
+--data '{
+    "id-cliente": "{{cliente_id}}",
+    "produtos": ["{{product_id}}"],
+    "numero-do-pedido": "01",
+    "total": 19000,
+    "status": "aguardando pagamento"
+}'
+```
+
+## Pagamento
+
+#### Atualizar Status de Pagamentos pelo id do pedido
+
+```cURL
+curl --location --request PUT 'localhost:8080/pagamento/{{pedido_id}}' 
+--header 'Content-Type: application/json' 
+--data '{
+    "status": "pago"
+}'
+```
+
+#### Buscar pagamentos pelo id do pedido
+
+```cURL
+curl --location 'localhost:8080/pagamento/d7ce1a59-71da-494b-a115-454b1b970c4a'
 ```
