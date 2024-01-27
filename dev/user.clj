@@ -74,7 +74,6 @@
         )
 )
 
-
 (defn add-migration
   [migration-name]
   (migratus/create (migratus) migration-name))
@@ -100,12 +99,14 @@
 
 
 (defn criar-produtos
-  []
-  (hc/post "http://localhost:8080/produto" {:headers {"content-type" "application/json"}
-                                            :body (json/write-str {:nome "Sandubinha do bem"
-                                                                   :descricao "Sandubinha do bem"
-                                                                   :categoria "lanche"
-                                                                   :preco-centavos 4400})}))
+  [& [host]]
+  (hc/post
+    (format "http://%s:8080/produto" (or host "localhost"))
+    {:headers {"content-type" "application/json"}
+     :body (json/write-str {:nome "Sandubinha do bem"
+                            :descricao "Sandubinha do bem"
+                            :categoria "lanche"
+                            :preco-centavos 4400})}))
 
 
 (defn deletar-produto
@@ -130,22 +131,36 @@
            (add-tap api/submit)
            (api/open))))
 
+(defn stress-cluster [external-ip n-req]
+  (time
+    (apply
+      pcalls
+      (repeat n-req
+              #(do
+                 (let [start (System/currentTimeMillis)
+                       res (hato.client/get (str "http://" external-ip ":8080/produtos/lanche"))
+                       end (System/currentTimeMillis)]
+                   {:response res
+                    :duration (- end start)}))))))
+
 (defn get-pedidos
   []
   (hc/get "http://localhost:8080/pedidos"))
 
 
 (defn post-pedido
-  []
-  (hc/post "http://localhost:8080/pedido" {:headers {"content-type" "application/json"}
-                                            :body (json/write-str {:id-cliente #uuid "236d3142-e4a7-4c23-976c-34454d8db1fc",
-                                                                   :produtos
-                                                                   [#uuid "f11c6b18-89fb-461a-9d76-9c59d9262f23"
-                                                                    #uuid "4e5ce39e-e30e-48e9-a763-f2a2f2fdcd68"
-                                                                    #uuid "b800c75e-18af-4d31-a7f1-6f5b3a457903"],
-                                                                   :numero-do-pedido "2",
-                                                                   :total 2000,
-                                                                   :status "aguardando pagamento"})}))
+  [& [host]]
+  (hc/post
+    (format "http://%s:8080/pedido" (or host "localhost"))
+    {:headers {"content-type" "application/json"}
+     :body (json/write-str {:id-cliente #uuid "236d3142-e4a7-4c23-976c-34454d8db1fc",
+                            :produtos
+                            [#uuid "f11c6b18-89fb-461a-9d76-9c59d9262f23"
+                             #uuid "4e5ce39e-e30e-48e9-a763-f2a2f2fdcd68"
+                             #uuid "b800c75e-18af-4d31-a7f1-6f5b3a457903"],
+                            :numero-do-pedido "2",
+                            :total 2000,
+                            :status "aguardando pagamento"})}))
 
 (defn post-confirmacao-pagamento
   []

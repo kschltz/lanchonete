@@ -22,6 +22,31 @@ Download from https://github.com/mba-fiap/lanchonete
 
 ## Usage
 
+### Kubernetes
+You can run/deploy the project in Kubernetes using the following command:
+
+    $ kubectl apply -f k8s/postgre/ && kubectl apply -f k8s/lanchonete/
+
+#### kubernetes development
+If you are using minikube you can run the following helper script to start a fresh minikube and load everything you need:
+
+        $ ./bin/minikube-ground-up.sh
+It will:
+- 1 - Delete the current minikube
+- 2 - Create a new minikube
+- 3 - build the app image
+- 4 - loag de image
+- 5 - apply the k8s files
+- 7 - enable the metrics addon
+- 8 - open up minikube tunnel for connectivity
+
+##### The artifacts created should look like this:
+###### Lanchonete
+![Lanchonete objects](k8s/lanchonete.jpeg)
+###### PostgreSQL
+![Lanchonete objects](k8s/postgre.jpeg)
+
+
 ### Docker compose
 From the root of the project, run:
 
