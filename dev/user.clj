@@ -39,33 +39,40 @@
 
 
 (comment
-  (.listar (repository :repository/cliente) {})
-  (.listar (repository :repository/produto) {})
-  (.listar (repository :repository/pedido) {})
-  (.criar (repository :repository/pedido)
-          {:id-cliente #uuid "236d3142-e4a7-4c23-976c-34454d8db1fc",
-           :produtos
-           [#uuid "f11c6b18-89fb-461a-9d76-9c59d9262f23"
-            #uuid "4e5ce39e-e30e-48e9-a763-f2a2f2fdcd68"
-            #uuid "b800c75e-18af-4d31-a7f1-6f5b3a457903"],
-           :numero-do-pedido "2",
-           :total 2000,
-           :status "aguardando pagamento"})
-  (.atualizar (repository :repository/pedido)
-              {:id #uuid"fbb98663-77ab-4560-a065-6b9b833c190f"
-               :id-cliente #uuid "336d3142-e4a7-4c23-976c-34454d8db1fc",
-               :produtos [#uuid "f11c6b18-89fb-461a-9d76-9c59d9262f23"]
-               :numero-do-pedido "5",
-               :total 2000,
-               :status "aguardando pagamento"})
+(.listar (repository :repository/cliente) {})
+(.listar (repository :repository/produto) {})
+(.listar (repository :repository/pedido) {})
+(.listar (repository :repository/pagamento) {})
+(.criar (repository :repository/pedido)
+        {:id-cliente       #uuid "236d3142-e4a7-4c23-976c-34454d8db1fc",
+         :produtos
+         [#uuid "f11c6b18-89fb-461a-9d76-9c59d9262f23"
+          #uuid "4e5ce39e-e30e-48e9-a763-f2a2f2fdcd68"
+          #uuid "b800c75e-18af-4d31-a7f1-6f5b3a457903"],
+         :numero-do-pedido "2",
+         :total            2000,
+         :status           "aguardando pagamento"})
+(.atualizar (repository :repository/pedido)
+        {:id #uuid"fbb98663-77ab-4560-a065-6b9b833c190f"
+         :id-cliente       #uuid "336d3142-e4a7-4c23-976c-34454d8db1fc",
+         :produtos [#uuid "f11c6b18-89fb-461a-9d76-9c59d9262f23"]
+         :numero-do-pedido "5",
+         :total            2000,
+         :status           "aguardando pagamento"})
 
-  (.criar (repository :repository/produto)
-          {:nome "novo-produto"
-           :descricao "descricao"
-           :categoria :lanche
-           :preco-centavos 400}
-          ))
+(.criar (repository :repository/produto)
+        {:nome "novo-produto"
+        :descricao "descricao"
+        :categoria :lanche
+        :preco-centavos 400}
+)
 
+(.criar (repository :repository/pagamento)
+        {:id-pedido #uuid"f1429128-0418-4a87-b19a-b5454b167727"
+         :total 12345
+         :status "em processamento"}
+        )
+)
 
 (defn add-migration
   [migration-name]
@@ -154,5 +161,11 @@
                             :numero-do-pedido "2",
                             :total 2000,
                             :status "aguardando pagamento"})}))
+
+(defn post-confirmacao-pagamento
+  []
+  (hc/post "http://localhost:8080/confirmacao-pagamento/f1429128-0418-4a87-b19a-b5454b167727"
+           {:headers {"content-type" "application/json"}
+            :body    (json/write-str {:status "pago"})}))
 
 
