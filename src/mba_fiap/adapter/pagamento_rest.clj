@@ -14,9 +14,23 @@
      :headers {"Content-Type" "application/json"}
      :body result}))
 
+(defn atualizar-status-pagamento
+  [request]
+  (let [repository (get-in request [:app-context :repository/pagamento])
+        id-pedido (get-in request [:path-params :id-pedido])
+        status (get-in request [:json-params :status])
+        result (pagamento.service/atualizar-status-pagamento repository (parse-uuid id-pedido) status)]
+    {:status  200
+     :headers {"Content-Type" "application/json"}
+     :body    result}))
+
 (defn pagamento-routes
   []
   [["/pagamento/:id-pedido" ^:interceptors [(body-params/body-params)
                                             middlewares/params
                                             middlewares/keyword-params]
-    {:get `buscar-pagamento-por-id-pedido}]])
+    {:get `buscar-pagamento-por-id-pedido}]
+   ["/pagamento/:id-pedido" ^:interceptors [(body-params/body-params)
+                                                     middlewares/params
+                                                     middlewares/keyword-params]
+    {:put `atualizar-status-pagamento}]])

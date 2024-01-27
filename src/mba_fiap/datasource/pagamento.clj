@@ -11,12 +11,13 @@
 
   (criar
     [_ data]
-    (jdbc/execute!)
-    connection
-    (hs/format {:insert-into :pagamento
-                :values [{:id_pedido (:id-pedido data)
-                          :total (:total data)}]})
-    {:return-keys true})
+    (jdbc/execute!
+      connection
+      (hs/format {:insert-into :pagamento
+                  :values      [{:id_pedido (:id-pedido data)
+                                 :total     (:total data)
+                                 :status    (:status data)}]}
+                 {:return-keys true})))
 
   (buscar
     [_ id]
@@ -36,16 +37,17 @@
 
   (atualizar
     [_ data]
-    (->> {:update :pagamento
-          :set data
-          :where [:= :id (:id data)]}
-         hs/format
-         (jdbc/execute! connection)))
+    (jdbc/execute!
+      connection
+      (hs/format {:update :pagamento
+                  :set    data
+                  :where  [:= :id-pedido (:id-pedido data)]})
+      {:return-keys true}))
 
   (remover
     [_ id]
     (->> {:delete-from :pagamento
-          :where [:= :id id]}
+          :where [:= :id-pedido id]}
          hs/format
          (jdbc/execute-one! connection))))
 
