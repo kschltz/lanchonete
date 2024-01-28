@@ -1,18 +1,35 @@
 (ns mba-fiap.adapter.pagamento-rest
   (:require
-   [io.pedestal.http.body-params :as body-params]
-   [io.pedestal.http.ring-middlewares :as middlewares]
-   [mba-fiap.service.pagamento :as pagamento.service]))
+    [io.pedestal.http.body-params :as body-params]
+    [io.pedestal.http.ring-middlewares :as middlewares]
+    [mba-fiap.service.pagamento :as pagamento.service]
+    [mba-fiap.usecase.pagamento :as usecase.pagamento]))
 
-(defn buscar-pagamento-por-id-pedido
+
+(defn criar-pagamento
+  [request]
+  (let [repository (get-in request [:app-context :repository/pagamento])
+        data (:json-params request)
+        parsed-data (-> data
+                        (update :id-pedido parse-uuid))
+        result (pagamento.service/criar-pagamento repository parsed-data)]
+    {:status 200
+     :headers {"Content-Type" "application/json"}
+     :body result}))
+
+
+(defn buscar-por-id-pedido
   [request]
   (let [repository (get-in request [:app-context :repository/pagamento])
         {:keys [id-pedido]} (:path-params request)
         id-pedido (parse-uuid id-pedido)
-        result (pagamento.service/buscar-por-id-pedido repository id-pedido)]
+        result (pagamento.service/buscar-por-id-pedido
+                 repository
+                 (usecase.pagamento/listar-por-pedido-id id-pedido))]
     {:status 200
      :headers {"Content-Type" "application/json"}
      :body result}))
+
 
 (defn atualizar-status-pagamento
   [request]
@@ -24,13 +41,16 @@
      :headers {"Content-Type" "application/json"}
      :body    result}))
 
+
 (defn pagamento-routes
   []
-  [["/pagamento/:id-pedido" ^:interceptors [(body-params/body-params)
+  [["/pagamento" ^:interceptors [(body-params/body-params)]
+    {:post `criar-pagamento}]
+   ["/pagamento/:id-pedido" ^:interceptors [(body-params/body-params)
                                             middlewares/params
                                             middlewares/keyword-params]
-    {:get `buscar-pagamento-por-id-pedido}]
+    {:get `buscar-por-id-pedido}]
    ["/pagamento/:id-pedido" ^:interceptors [(body-params/body-params)
-                                                     middlewares/params
-                                                     middlewares/keyword-params]
+                                            middlewares/params
+                                            middlewares/keyword-params]
     {:put `atualizar-status-pagamento}]])
