@@ -12,31 +12,36 @@
       Repository)))
 
 
+
 (defn mock-repository
   [store]
+  (add-watch store :log (fn [_ _ _ ns]
+                          (tap> [::19 ns])))
   (proxy [Repository] []
     (criar
       [data]
-      [#:pagamento{:id (random-uuid)
-                   :id_pedido  (:id-pedido data)
-                   :total      (:total data)
-                   :status     (:status data)
-                   :created_at (:created_at data)}])
+      (let [uuid (random-uuid)]
+        (swap! store assoc uuid data)
+        (swap! store update (:id-pedido data) conj data)
+        [#:pagamento{:id uuid
+                     :id_pedido (:id-pedido data)
+                     :total (:total data)
+                     :status (:status data)
+                     :created_at (:created_at data)}]))
 
     (buscar
       [id]
       (let [data (get @store id)]
         (when data
           #:pagamento{:id (:id data)
-                      :id_pedido  (:id_pedido data)
-                      :total      (:total data)
-                      :status     (:status data)
+                      :id_pedido (:id_pedido data)
+                      :total (:total data)
+                      :status (:status data)
                       :created_at (:created_at data)})))
 
     (listar
-      [_q]
-      (let [data @store]
-        data))
+      [q]
+      (get @store (:id-pedido q)))
 
     (atualizar
       [data]
@@ -44,9 +49,9 @@
             updated-data (assoc found :status (:status data))]
         (swap! store assoc (:id updated-data) updated-data)
         [#:pagamento{:id (:id updated-data)
-                     :id_pedido  (:id_pedido updated-data)
-                     :total      (:total updated-data)
-                     :status     (:status updated-data)
+                     :id_pedido (:id_pedido updated-data)
+                     :total (:total updated-data)
+                     :status (:status updated-data)
                      :created_at (:created_at updated-data)}]))))
 
 
@@ -58,13 +63,13 @@
       (= (:id-pedido pagamento) (:id-pedido result)))))
 
 
-(defspec buscar-por-id-pedido-test 1000
+(defspec buscar-por-id-pedido-test 1
   (prop/for-all
     [pagamento (mg/generator pagamento/Pagamento)]
     (let [store (atom {})
           mr (mock-repository store)
           _insert (.criar mr pagamento)
-          result (pagamento.service/buscar-por-id-pedido mr (:id-pedido pagamento))
+          result (pagamento.service/buscar-por-id-pedido mr pagamento)
           [{:pagamento/keys [id_pedido]}] result]
       (= (:id_pedido pagamento) id_pedido))))
 

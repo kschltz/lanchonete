@@ -52,6 +52,7 @@
          :numero-do-pedido "2",
          :total            2000,
          :status           "aguardando pagamento"})
+
 (.atualizar (repository :repository/pedido)
         {:id #uuid"fbb98663-77ab-4560-a065-6b9b833c190f"
          :id-cliente       #uuid "336d3142-e4a7-4c23-976c-34454d8db1fc",

@@ -13,7 +13,6 @@
         parsed-data (-> data
                         (update :id-pedido parse-uuid))
         result (pagamento.service/criar-pagamento repository parsed-data)]
-    (tap> result)
     {:status 200
      :headers {"Content-Type" "application/json"}
      :body result}))
