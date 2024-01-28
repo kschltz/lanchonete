@@ -39,41 +39,69 @@
 
 
 (comment
-(.listar (repository :repository/cliente) {})
-(.listar (repository :repository/produto) {})
-(.listar (repository :repository/pedido) {})
-(.listar (repository :repository/pagamento) {})
-(.criar (repository :repository/pedido)
-        {:id-cliente       #uuid "236d3142-e4a7-4c23-976c-34454d8db1fc",
-         :produtos
-         [#uuid "f11c6b18-89fb-461a-9d76-9c59d9262f23"
-          #uuid "4e5ce39e-e30e-48e9-a763-f2a2f2fdcd68"
-          #uuid "b800c75e-18af-4d31-a7f1-6f5b3a457903"],
-         :numero-do-pedido "2",
-         :total            2000,
-         :status           "aguardando pagamento"})
+  (.listar (repository :repository/cliente) {})
+  (.listar (repository :repository/produto) {})
+  (.listar (repository :repository/pedido) {})
+  (.listar (repository :repository/pagamento) {})
 
-(.atualizar (repository :repository/pedido)
-        {:id #uuid"fbb98663-77ab-4560-a065-6b9b833c190f"
-         :id-cliente       #uuid "336d3142-e4a7-4c23-976c-34454d8db1fc",
-         :produtos [#uuid "f11c6b18-89fb-461a-9d76-9c59d9262f23"]
-         :numero-do-pedido "5",
-         :total            2000,
-         :status           "aguardando pagamento"})
+  (let [[cliente] (.criar (repository :repository/cliente) {})
+        [bebida] (.criar (repository :repository/produto)
+                         {:nome "Guaraná Jesus"
+                          :descricao "coca rosa"
+                          :categoria :bebida
+                          :preco-centavos 700})
+        [acompanhamento] (.criar (repository :repository/produto)
+                                 {:nome "Batatas oleosas"
+                                  :descricao "infarto potato"
+                                  :categoria :acompanhamento
+                                  :preco-centavos 1500})
+        [lanche] (.criar (repository :repository/produto)
+                         {:nome "X-BEIKO"
+                          :descricao "pancoporco"
+                          :categoria :lanche
+                          :preco-centavos 3000})
+        [pedido] (.criar (repository :repository/pedido)
+                         {:id-cliente (:cliente/id cliente)
+                          :produtos
+                          [(:produto/id bebida)
+                           (:produto/id acompanhamento)
+                           (:produto/id lanche)]
+                          :numero-do-pedido "1"
+                          :total 5200
+                          :status "aguardando pagamento"})]
+    pedido)
 
-(.criar (repository :repository/produto)
-        {:nome "novo-produto"
-        :descricao "descricao"
-        :categoria :lanche
-        :preco-centavos 400}
-)
+  (.criar (repository :repository/pedido)
+          {:id-cliente #uuid "236d3142-e4a7-4c23-976c-34454d8db1fc",
+           :produtos
+           [#uuid "f11c6b18-89fb-461a-9d76-9c59d9262f23"
+            #uuid "4e5ce39e-e30e-48e9-a763-f2a2f2fdcd68"
+            #uuid "b800c75e-18af-4d31-a7f1-6f5b3a457903"],
+           :numero-do-pedido "2",
+           :total 2000,
+           :status "aguardando pagamento"})
 
-(.criar (repository :repository/pagamento)
-        {:id-pedido #uuid"f1429128-0418-4a87-b19a-b5454b167727"
-         :total 12345
-         :status "em processamento"}
-        )
-)
+  (.atualizar (repository :repository/pedido)
+              {:id #uuid"fbb98663-77ab-4560-a065-6b9b833c190f"
+               :id-cliente #uuid "336d3142-e4a7-4c23-976c-34454d8db1fc",
+               :produtos [#uuid "f11c6b18-89fb-461a-9d76-9c59d9262f23"]
+               :numero-do-pedido "5",
+               :total 2000,
+               :status "aguardando pagamento"})
+
+  (.criar (repository :repository/produto)
+          {:nome "novo-produto"
+           :descricao "descricao"
+           :categoria :lanche
+           :preco-centavos 400}
+          )
+
+  (.criar (repository :repository/pagamento)
+          {:id-pedido #uuid"f1429128-0418-4a87-b19a-b5454b167727"
+           :total 12345
+           :status "em processamento"}
+          )
+  )
 
 
 (defn add-migration
@@ -139,19 +167,19 @@
 (defn post-pedido
   []
   (hc/post "http://localhost:8080/pedido" {:headers {"content-type" "application/json"}
-                                            :body (json/write-str {:id-cliente #uuid "236d3142-e4a7-4c23-976c-34454d8db1fc",
-                                                                   :produtos
-                                                                   [#uuid "f11c6b18-89fb-461a-9d76-9c59d9262f23"
-                                                                    #uuid "4e5ce39e-e30e-48e9-a763-f2a2f2fdcd68"
-                                                                    #uuid "b800c75e-18af-4d31-a7f1-6f5b3a457903"],
-                                                                   :numero-do-pedido "2",
-                                                                   :total 2000,
-                                                                   :status "aguardando pagamento"})}))
+                                           :body (json/write-str {:id-cliente #uuid "236d3142-e4a7-4c23-976c-34454d8db1fc",
+                                                                  :produtos
+                                                                  [#uuid "f11c6b18-89fb-461a-9d76-9c59d9262f23"
+                                                                   #uuid "4e5ce39e-e30e-48e9-a763-f2a2f2fdcd68"
+                                                                   #uuid "b800c75e-18af-4d31-a7f1-6f5b3a457903"],
+                                                                  :numero-do-pedido "2",
+                                                                  :total 2000,
+                                                                  :status "aguardando pagamento"})}))
 
 (defn post-confirmacao-pagamento
   []
   (hc/post "http://localhost:8080/confirmacao-pagamento/f1429128-0418-4a87-b19a-b5454b167727"
            {:headers {"content-type" "application/json"}
-            :body    (json/write-str {:status "pago"})}))
+            :body (json/write-str {:status "pago"})}))
 
 
