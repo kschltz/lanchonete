@@ -14,7 +14,9 @@
   :migration-dir "migrations/"
   :init-in-transaction? false
   :migration-table-name "app_migrations"
-  :db {:datasource #ig/ref :mba-fiap.datasource.postgres/db}}
+  :properties {:map {:migratus {:database #or [#env POSTGRES_DB "postgres"]}}}
+  :db {:dbname #or [#env POSTGRES_DB "postgres"]
+       :datasource #ig/ref :mba-fiap.datasource.postgres/db}}
 
  [:mba-fiap.repository.repository/repository :repository/cliente]
  {:repository-name :cliente

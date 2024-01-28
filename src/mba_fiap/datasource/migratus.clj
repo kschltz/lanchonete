@@ -7,7 +7,6 @@
   [_ {:keys [migrate-on-init?]
       :or   {migrate-on-init? true}
       :as   component}]
-  (println "Starting migration")
   (when migrate-on-init?
     (migratus/migrate component))
   component)
