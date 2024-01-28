@@ -27,7 +27,7 @@
          (uuid? idBusca)]}
   (let [result (.listar repository {:where [:= :id-pedido idBusca]})
         pagamentos (mapv pg->pagamento result)]
-    (if (nil? pagamentos)
+    (if (empty? pagamentos)
       {:error "Pagamento não encontrado"}
       pagamentos)))
 
