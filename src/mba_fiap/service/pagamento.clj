@@ -29,10 +29,9 @@
 
 
 (defn buscar-por-id-pedido
-  [^Repository repository idBusca]
-  {:pre [(instance? Repository repository)
-         (uuid? idBusca)]}
-  (let [result (.listar repository {:where [:= :id-pedido idBusca]})
+  [^Repository repository usecase]
+  {:pre [(instance? Repository repository)]}
+  (let [result (.listar repository usecase)
         pagamentos (mapv pg->pagamento result)]
     (if (empty? pagamentos)
       {:error "Pagamento não encontrado"}
