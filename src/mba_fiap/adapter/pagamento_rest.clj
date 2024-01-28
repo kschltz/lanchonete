@@ -4,6 +4,17 @@
    [io.pedestal.http.ring-middlewares :as middlewares]
    [mba-fiap.service.pagamento :as pagamento.service]))
 
+(defn criar-pagamento [request]
+  (let [repository (get-in request [:app-context :repository/pagamento])
+        data (:json-params request)
+        parsed-data (-> data
+                        (update :id-pedido parse-uuid))
+        result (pagamento.service/criar-pagamento repository parsed-data)]
+    (tap> result)
+    {:status 200
+     :headers {"Content-Type" "application/json"}
+     :body result}))
+
 (defn buscar-pagamento-por-id-pedido
   [request]
   (let [repository (get-in request [:app-context :repository/pagamento])
@@ -26,11 +37,13 @@
 
 (defn pagamento-routes
   []
-  [["/pagamento/:id-pedido" ^:interceptors [(body-params/body-params)
+  [["/pagamento" ^:interceptors [(body-params/body-params)]
+    {:post `criar-pagamento}]
+   ["/pagamento/:id-pedido" ^:interceptors [(body-params/body-params)
                                             middlewares/params
                                             middlewares/keyword-params]
     {:get `buscar-pagamento-por-id-pedido}]
    ["/pagamento/:id-pedido" ^:interceptors [(body-params/body-params)
-                                                     middlewares/params
-                                                     middlewares/keyword-params]
+                                            middlewares/params
+                                            middlewares/keyword-params]
     {:put `atualizar-status-pagamento}]])

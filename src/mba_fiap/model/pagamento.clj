@@ -7,5 +7,4 @@
   [:map
    [:id-pedido uuid?]
    [:total pos-int?]
-   [:status Status]
-   [:created-at string?]])
+   [:status Status]])
