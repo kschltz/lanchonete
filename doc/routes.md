@@ -8,6 +8,11 @@
 4. Cadastrar pagamento feito na API de [pagamento](#pagamento)
 5. Atualizar o status de pagamento de um pedido na API de [pagamento](#pagamento)
 
+
+**Ps. Caso rode a aplicação via minikube, é necessário usar o external IP do minikube como host**
+
+
+
 ### Produto
 
 Rotas responsável pela manutenção de produtos no sistema;

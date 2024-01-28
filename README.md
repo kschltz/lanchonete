@@ -40,12 +40,8 @@ It will:
 - 7 - enable the metrics addon
 - 8 - open up minikube tunnel for connectivity
 
-##### The artifacts created should look like this:
-###### Lanchonete
-![Lanchonete objects](k8s/lanchonete.jpeg)
-###### PostgreSQL
-![Lanchonete objects](k8s/postgre.jpeg)
-
+##### You can see what the generated artifacts look like in the architecture diagrams:
+[architecture documentation](/doc/architecture.md)
 
 ### Docker compose
 From the root of the project, run:
