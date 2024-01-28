@@ -8,10 +8,7 @@
 4. Cadastrar pagamento feito na API de [pagamento](#pagamento)
 5. Atualizar o status de pagamento de um pedido na API de [pagamento](#pagamento)
 
-
 **Ps. Caso rode a aplicação via minikube, é necessário usar o external IP do minikube como host**
-
-
 
 ### Produto
 
@@ -90,7 +87,7 @@ curl --location 'http://localhost:8080/pedidos'
 
 ```cURL
 curl --location PUT 'http://localhost:8080/pedido/{{pedido_id}}'
---header 'Content-Type: application/json' 
+--header 'Content-Type: application/json'
 --data '{
     "id-cliente": "{{cliente_id}}",
     "produtos": ["{{product_id}}"],
@@ -105,10 +102,22 @@ curl --location PUT 'http://localhost:8080/pedido/{{pedido_id}}'
 #### Atualizar Status de Pagamentos pelo id do pedido
 
 ```cURL
-curl --location --request PUT 'localhost:8080/pagamento/{{pedido_id}}' 
---header 'Content-Type: application/json' 
+curl --location --request PUT 'localhost:8080/pagamento/{{pedido_id}}'
+--header 'Content-Type: application/json'
 --data '{
     "status": "pago"
+}'
+```
+
+#### Criar um pagamento
+
+```cURL
+curl --location 'http://localhost:8080/pagamento' \
+--header 'Content-Type: application/json' \
+--data '{
+    "id-pedido": "{{pedido_id}}",
+    "status": "pago",
+    "total": 4999
 }'
 ```
 
