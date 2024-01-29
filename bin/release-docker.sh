@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-
-PUSH="${PUSH:-false}"
+VERSION="${VERSION:-latest}"
+PUSH="${PUSH:-true}"
 docker build -t lanchonete .
-if [ "$PUSH" = true ] ; then
+if [ "$PUSH" = true ]; then
   docker tag lanchonete kschltz/lanchonete:${VERSION}
   docker push kschltz/lanchonete:${VERSION}
 fi
