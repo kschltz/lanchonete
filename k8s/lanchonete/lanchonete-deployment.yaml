@@ -17,7 +17,7 @@ spec:
       containers:
         - name: lanchonete
           image: lanchonete:latest # Sets Image to be used from local repository
-          imagePullPolicy: "IfNotPresent"
+          imagePullPolicy: "Never"
           resources:
             limits:
               cpu: 1000m
