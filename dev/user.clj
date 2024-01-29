@@ -1,13 +1,12 @@
 (ns user
   (:require
-    [clojure.data.json :as json]
-    [hato.client :as hc]
-    [integrant.core :as ig]
-    [integrant.repl :as r]
-    [integrant.repl.state]
-    [mba-fiap.lanchonete :as lanchonete]
-    [migratus.core :as migratus]))
-
+   [clojure.data.json :as json]
+   [hato.client :as hc]
+   [integrant.core :as ig]
+   [integrant.repl :as r]
+   [integrant.repl.state]
+   [mba-fiap.lanchonete :as lanchonete]
+   [migratus.core :as migratus]))
 
 (integrant.repl/set-prep! #(lanchonete/prep-config :dev))
 
@@ -19,16 +18,13 @@
 (def reset r/reset)
 (def reset-all r/reset-all)
 
-
 (defn migratus
   []
   (:mba-fiap.datasource.migratus/migratus integrant.repl.state/system))
 
-
 (defn db
   []
   (:mba-fiap.datasource.postgres/db integrant.repl.state/system))
-
 
 (defn repository
   [repository-key]
@@ -37,14 +33,11 @@
        first
        second))
 
-
 (comment
   (.listar (repository :repository/cliente) {})
   (.listar (repository :repository/produto) {})
   (.listar (repository :repository/pedido) {})
   (.listar (repository :repository/pagamento) {})
-
-
 
   (.criar (repository :repository/pedido)
           {:id-cliente #uuid "236d3142-e4a7-4c23-976c-34454d8db1fc",
@@ -68,20 +61,16 @@
           {:nome "novo-produto"
            :descricao "descricao"
            :categoria :lanche
-           :preco-centavos 400}
-          )
+           :preco-centavos 400})
 
   (.criar (repository :repository/pagamento)
           {:id-pedido #uuid"f1429128-0418-4a87-b19a-b5454b167727"
            :total 12345
-           :status "em processamento"}
-          )
-  )
+           :status "em processamento"}))
 
 (defn add-migration
   [migration-name]
   (migratus/create (migratus) migration-name))
-
 
 (defn url [& [host path]]
   (str (format "http://%s:8080" (or host "localhost")) path))
@@ -93,20 +82,17 @@
             :headers {"content-type" "application/json"}
             :body (json/write-str (or body {"cpf" "04373360189"}))}))
 
-
 (defn get-cliente
   [cpf & [host]]
   (hc/get (url host (str "/cliente/" cpf))))
 
-
 (defn get-produtos
   [categoria]
   (-> (hc/get
-        (str "http://localhost:8080/produtos/" categoria)
-        {:throw-exceptions? false
-         :headers {"Content-Type" "application/json"}})
+       (str "http://localhost:8080/produtos/" categoria)
+       {:throw-exceptions? false
+        :headers {"Content-Type" "application/json"}})
       (doto tap>)))
-
 
 (defn post-produto
   [& [host body]]
@@ -119,11 +105,9 @@
                                        :categoria "lanche"
                                        :preco-centavos 4400}))}))
 
-
 (defn deletar-produto
   [id]
   (hc/delete (str "http://localhost:8080/produto/" id)))
-
 
 (defn editar-produto
   [id]
@@ -135,7 +119,6 @@
                                   :categoria "lanche"
                                   :preco-centavos 4750})}))
 
-
 (defn portal
   []
   (eval '(do
@@ -145,20 +128,19 @@
 
 (defn stress-cluster [external-ip n-req]
   (time
-    (apply
-      pcalls
-      (repeat n-req
-              #(do
-                 (let [start (System/currentTimeMillis)
-                       res (hato.client/get (str "http://" external-ip ":8080/produtos/lanche"))
-                       end (System/currentTimeMillis)]
-                   {:response res
-                    :duration (- end start)}))))))
+   (apply
+    pcalls
+    (repeat n-req
+            #(do
+               (let [start (System/currentTimeMillis)
+                     res (hato.client/get (str "http://" external-ip ":8080/produtos/lanche"))
+                     end (System/currentTimeMillis)]
+                 {:response res
+                  :duration (- end start)}))))))
 
 (defn get-pedidos
   [& [host]]
   (hc/get (url host "/pedidos")))
-
 
 (defn post-pedido
   [& [host body]]
@@ -170,14 +152,15 @@
 (defn post-confirmacao-pagamento
   [id-pgmto & [host]]
   (hc/post
-    (url host (str "/confirmacao-pagamento/" id-pgmto))
-    {:throw-exceptions? false
-     :headers {"content-type" "application/json"}
-     :body (json/write-str {:status "pago"})}))
+   (url host (str "/confirmacao-pagamento/" id-pgmto))
+   {:throw-exceptions? false
+    :headers {"content-type" "application/json"}
+    :body (json/write-str {:status "pago"})}))
 
 (defn ->body
   [response]
   (tap> response)
+  (Thread/sleep 1)
   (-> response :body (json/read-str :key-fn keyword)))
 
 (defn pedido-cycle [& [host]]
@@ -199,26 +182,18 @@
                                            :categoria :lanche
                                            :preco-centavos 3000}))
 
-        ;[pedido]
-        #_(.criar (repository :repository/pedido)
-                  {:id-cliente (:cliente/id cliente)
-                   :produtos
-                   [(:produto/id bebida)
-                    (:produto/id acompanhamento)
-                    (:produto/id lanche)]
-                   :numero-do-pedido "1"
-                   :total 5200
-                   :status "aguardando pagamento"})]
+        pedido (->body (hc/post (url host "/pedido")
+                                (doto {:body (json/write-str {:produtos (mapv :id [bebida acompanhamento lanche])
+                                                              :id-cliente (:id cliente)
+                                                              :numero-do-pedido "1"
+                                                              :total 5200})
+                                       :content-type :json}
+                                  tap>)))]
 
-    (tap> {:cliente cliente
+    (doto {:cliente cliente
            :bebida bebida
            :acompanhamento acompanhamento
-           :lanche lanche})
-    #_(hc/post (url host "/pedido")
-               (doto {:body (json/write-str {:produtos (mapv :produto/id [bebida acompanhamento lanche])
-                                             :id-cliente (:cliente/id cliente)
-                                             :numero-do-pedido "1"
-                                             :total 65})
-                      :content-type :json}
-                 tap>))))
+           :lanche lanche
+           :pedido pedido} tap>)))
 
+(comment (pedido-cycle))

@@ -1,7 +1,6 @@
 (ns mba-fiap.usecase.pedido
   (:require
-    [mba-fiap.model.pedido :as m.pedido]))
-
+   [mba-fiap.model.pedido :as m.pedido]))
 
 (defn listar-pedidos-abertos
   []
@@ -18,18 +17,17 @@
                    (reduce +))
         number-products (count produtos-data)
         errors (cond-> {}
-                       (not= total (:total pedido-data))
-                       (assoc :error/total (str "O valor informado está incorreto: " total))
+                 (not= total (:total pedido-data))
+                 (assoc :error/total (str "O valor informado está incorreto: " total))
 
-                       (not= number-products (count (:produtos pedido-data)))
-                       (assoc :error/produtos (str "A quantidade de produtos informada está incorreta: "
-                                                   number-products)))]
+                 (not= number-products (count (:produtos pedido-data)))
+                 (assoc :error/produtos (str "A quantidade de produtos informada está incorreta: "
+                                             number-products)))]
 
-    (when errors
+    (when (seq errors)
       (throw (ex-info "O pedido contêm erros: " errors)))
-
     {:id-cliente (:id-cliente pedido-data)
-     :produtos (mapv :id produtos-data)
+     :produtos (mapv :produto/id produtos-data)
      :numero-do-pedido (:numero-do-pedido pedido-data)
      :total total
-     :status (:status pedido-data)}))
+     :status m.pedido/recebido}))
