@@ -44,32 +44,7 @@
   (.listar (repository :repository/pedido) {})
   (.listar (repository :repository/pagamento) {})
 
-  (let [[cliente] (.criar (repository :repository/cliente) {})
-        [bebida] (.criar (repository :repository/produto)
-                         {:nome "Guaraná Jesus"
-                          :descricao "coca rosa"
-                          :categoria :bebida
-                          :preco-centavos 700})
-        [acompanhamento] (.criar (repository :repository/produto)
-                                 {:nome "Batatas oleosas"
-                                  :descricao "infarto potato"
-                                  :categoria :acompanhamento
-                                  :preco-centavos 1500})
-        [lanche] (.criar (repository :repository/produto)
-                         {:nome "X-BEIKO"
-                          :descricao "pancoporco"
-                          :categoria :lanche
-                          :preco-centavos 3000})
-        [pedido] (.criar (repository :repository/pedido)
-                         {:id-cliente (:cliente/id cliente)
-                          :produtos
-                          [(:produto/id bebida)
-                           (:produto/id acompanhamento)
-                           (:produto/id lanche)]
-                          :numero-do-pedido "1"
-                          :total 5200
-                          :status "aguardando pagamento"})]
-    pedido)
+
 
   (.criar (repository :repository/pedido)
           {:id-cliente #uuid "236d3142-e4a7-4c23-976c-34454d8db1fc",
@@ -108,34 +83,41 @@
   (migratus/create (migratus) migration-name))
 
 
+(defn url [host & [path]]
+  (str (format "http://%s:8080" (or host "localhost")) path))
+
 (defn post-client
-  []
-  (hc/post "http://localhost:8080/cliente" {:headers {"content-type" "application/json"}
-                                            :body "{\"cpf\": \"04373360189\"}"}))
+  [& [host body]]
+  (hc/post (url host "/cliente")
+           {:throw-exceptions? false
+            :headers {"content-type" "application/json"}
+            :body (json/write-str (or body {"cpf " "04373360189"}))}))
 
 
 (defn get-cliente
-  [cpf]
-  (hc/get (str "http://localhost:8080/cliente/" cpf)))
+  [cpf & [host]]
+  (hc/get (url host (str "/cliente/" cpf))))
 
 
 (defn get-produtos
   [categoria]
   (-> (hc/get
         (str "http://localhost:8080/produtos/" categoria)
-        {:headers {"Content-Type" "application/json"}})
+        {:throw-exceptions? false
+         :headers {"Content-Type" "application/json"}})
       (doto tap>)))
 
 
-(defn criar-produtos
-  [& [host]]
-  (hc/post
-    (format "http://%s:8080/produto" (or host "localhost"))
-    {:headers {"content-type" "application/json"}
-     :body (json/write-str {:nome "Sandubinha do bem"
-                            :descricao "Sandubinha do bem"
-                            :categoria "lanche"
-                            :preco-centavos 4400})}))
+(defn post-produto
+  [& [host body]]
+  (hc/post (url host "/produto")
+           {:throw-exceptions? false
+            :headers {"content-type" "application/json"}
+            :body (json/write-str (or body
+                                      {:nome "Sandubinha do bem"
+                                       :descricao "Sandubinha do bem"
+                                       :categoria "lanche"
+                                       :preco-centavos 4400}))}))
 
 
 (defn deletar-produto
@@ -146,7 +128,8 @@
 (defn editar-produto
   [id]
   (hc/put (str "http://localhost:8080/produto/" id)
-          {:headers {"content-type" "application/json"}
+          {:throw-exceptions? false
+           :headers {"content-type" "application/json"}
            :body (json/write-str {:nome "Novo sanduba editado"
                                   :descricao "Novo sanduba editado"
                                   :categoria "lanche"
@@ -173,28 +156,64 @@
                     :duration (- end start)}))))))
 
 (defn get-pedidos
-  []
-  (hc/get "http://localhost:8080/pedidos"))
+  [& [host]]
+  (hc/get (url host "/pedidos")))
 
 
 (defn post-pedido
-  [& [host]]
-  (hc/post
-    (format "http://%s:8080/pedido" (or host "localhost"))
-    {:headers {"content-type" "application/json"}
-     :body (json/write-str {:id-cliente #uuid "236d3142-e4a7-4c23-976c-34454d8db1fc",
-                            :produtos
-                            [#uuid "f11c6b18-89fb-461a-9d76-9c59d9262f23"
-                             #uuid "4e5ce39e-e30e-48e9-a763-f2a2f2fdcd68"
-                             #uuid "b800c75e-18af-4d31-a7f1-6f5b3a457903"],
-                            :numero-do-pedido "2",
-                            :total 2000,
-                            :status "aguardando pagamento"})}))
+  [& [host body]]
+  (hc/post (url host "/pedido")
+           {:throw-exceptions? false
+            :headers {"content-type" "application/json"}
+            :body (json/write-str body)}))
 
 (defn post-confirmacao-pagamento
-  []
-  (hc/post "http://localhost:8080/confirmacao-pagamento/f1429128-0418-4a87-b19a-b5454b167727"
-           {:headers {"content-type" "application/json"}
-            :body (json/write-str {:status "pago"})}))
+  [id-pgmto & [host]]
+  (hc/post
+    (url host (str "/confirmacao-pagamento/" id-pgmto))
+    {:throw-exceptions? false
+     :headers {"content-type" "application/json"}
+     :body (json/write-str {:status "pago"})}))
 
+(defn ->body
+  [response]
+  (tap> response)
+  (-> response :body json/read-str))
+(defn pedido-cycle [& [host]]
+  (let [cliente (->body (post-client host))
+        bebida (->body (post-produto host {:nome "Guaraná Jesus"
+                                           :descricao "coca rosa"
+                                           :categoria :bebida
+                                           :preco-centavos 700}))
+        acompanhamento (->body (post-produto host {:nome "Batatas oleosas"
+                                                   :descricao "infarto potato"
+                                                   :categoria :acompanhamento
+                                                   :preco-centavos 1500}))
+        lanche (->body (post-produto host {:nome "X-BEIKO"
+                                           :descricao "pancoporco"
+                                           :categoria :lanche
+                                           :preco-centavos 3000}))
+
+        ;[pedido]
+        #_(.criar (repository :repository/pedido)
+                  {:id-cliente (:cliente/id cliente)
+                   :produtos
+                   [(:produto/id bebida)
+                    (:produto/id acompanhamento)
+                    (:produto/id lanche)]
+                   :numero-do-pedido "1"
+                   :total 5200
+                   :status "aguardando pagamento"})
+        ]
+    (tap> {:cliente cliente
+           :bebida bebida
+           :acompanhamento acompanhamento
+           :lanche lanche})
+    #_(hc/post (url host "/pedido")
+               (doto {:body (json/write-str {:produtos (mapv :produto/id [bebida acompanhamento lanche])
+                                             :id-cliente (:cliente/id cliente)
+                                             :numero-do-pedido "1"
+                                             :total 65})
+                      :content-type :json}
+                 tap>))))
 
