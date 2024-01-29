@@ -50,3 +50,8 @@
   {:pre [(instance? Repository repository)
          (uuid? id)]}
   (.remover repository id))
+
+(defn listar-por-ids [^Repository repository ids]
+  {:pre [(instance? Repository repository)
+         (every? uuid? ids)]}
+  (.listar repository {:where [[:in :id ids]]}))

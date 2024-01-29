@@ -14,6 +14,10 @@
   [context]
   (interceptor/on-request #(assoc % :app-context context)))
 
+(defn tap-interceptor
+  []
+  (interceptor/on-request #(doto % tap>)))
+
 (def parse-json-body-interceptor
   (interceptor/on-response #(update % :body json/write-str)))
 
@@ -50,7 +54,7 @@
              ::http/port port
              ::http/host "0.0.0.0"}
       :always http/default-interceptors
-      :always (add-interceptors ctx-interceptor parse-json-body-interceptor)
+      :always (add-interceptors ctx-interceptor parse-json-body-interceptor (tap-interceptor))
       (or (= :dev env)
           (= :test env)) (-> http/dev-interceptors
                              (add-interceptors tap-error-interceptor))
