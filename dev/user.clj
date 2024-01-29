@@ -178,6 +178,7 @@
 (defn ->body
   [response]
   (tap> response)
+  (Thread/sleep 2000)
   (-> response :body (json/read-str :key-fn keyword)))
 
 (defn pedido-cycle [& [host]]
@@ -199,26 +200,18 @@
                                            :categoria :lanche
                                            :preco-centavos 3000}))
 
-        ;[pedido]
-        #_(.criar (repository :repository/pedido)
-                  {:id-cliente (:cliente/id cliente)
-                   :produtos
-                   [(:produto/id bebida)
-                    (:produto/id acompanhamento)
-                    (:produto/id lanche)]
-                   :numero-do-pedido "1"
-                   :total 5200
-                   :status "aguardando pagamento"})]
+        pedido (->body (hc/post (url host "/pedido")
+                                (doto {:body (json/write-str {:produtos (mapv :id [bebida acompanhamento lanche])
+                                                              :id-cliente (:id cliente)
+                                                              :numero-do-pedido "1"
+                                                              :total 65})
+                                       :content-type :json}
+                                  tap>)))]
 
-    (tap> {:cliente cliente
+    (doto {:cliente cliente
            :bebida bebida
            :acompanhamento acompanhamento
-           :lanche lanche})
-    #_(hc/post (url host "/pedido")
-               (doto {:body (json/write-str {:produtos (mapv :produto/id [bebida acompanhamento lanche])
-                                             :id-cliente (:cliente/id cliente)
-                                             :numero-do-pedido "1"
-                                             :total 65})
-                      :content-type :json}
-                 tap>))))
+           :lanche lanche
+           :pedido pedido} tap>)
+    ))
 
