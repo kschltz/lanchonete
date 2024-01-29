@@ -3,18 +3,22 @@
     [io.pedestal.http.body-params :as body-params]
     [io.pedestal.http.ring-middlewares :as middlewares]
     [mba-fiap.service.pedido :as pedido.service]
-    [mba-fiap.usecase.listar-pedido :as usecase.p]
+    [mba-fiap.service.produto :as produto.service]
+    [mba-fiap.usecase.pedido :as usecase.p]
     [medley.core :as medley]))
 
 
 (defn cadastrar-pedido
   [request]
-  (let [repository (get-in request [:app-context :repository/pedido])
+  (let [repository-pedido (get-in request [:app-context :repository/pedido])
+        repository-produto (get-in request [:app-context :repository/produto])
         data       (:json-params request)
         parsed-data (-> data
                         (update :id-cliente parse-uuid)
                         (update :produtos #(mapv parse-uuid %)))
-        result     (pedido.service/checkout repository parsed-data)]
+        produtos   (produto.service/listar-por-ids repository-produto (:produtos parsed-data))
+        to-create (usecase.p/criar-pedido produtos parsed-data)
+        result     (pedido.service/checkout repository-pedido to-create)]
     {:status  200
      :headers {"Content-Type" "application/json"}
      :body    result}))

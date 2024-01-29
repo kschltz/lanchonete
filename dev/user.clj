@@ -83,7 +83,7 @@
   (migratus/create (migratus) migration-name))
 
 
-(defn url [host & [path]]
+(defn url [& [host path]]
   (str (format "http://%s:8080" (or host "localhost")) path))
 
 (defn post-client
@@ -91,7 +91,7 @@
   (hc/post (url host "/cliente")
            {:throw-exceptions? false
             :headers {"content-type" "application/json"}
-            :body (json/write-str (or body {"cpf " "04373360189"}))}))
+            :body (json/write-str (or body {"cpf" "04373360189"}))}))
 
 
 (defn get-cliente
@@ -178,9 +178,14 @@
 (defn ->body
   [response]
   (tap> response)
-  (-> response :body json/read-str))
+  (-> response :body (json/read-str :key-fn keyword)))
+
 (defn pedido-cycle [& [host]]
-  (let [cliente (->body (post-client host))
+  (let [_ (next.jdbc/execute! (db) [(str "TRUNCATE TABLE pedido CASCADE;"
+                                         "TRUNCATE TABLE pagamento CASCADE;"
+                                         "TRUNCATE TABLE produto CASCADE;"
+                                         "TRUNCATE TABLE cliente CASCADE;")])
+        cliente (->body (post-client host))
         bebida (->body (post-produto host {:nome "Guaraná Jesus"
                                            :descricao "coca rosa"
                                            :categoria :bebida
@@ -203,8 +208,8 @@
                     (:produto/id lanche)]
                    :numero-do-pedido "1"
                    :total 5200
-                   :status "aguardando pagamento"})
-        ]
+                   :status "aguardando pagamento"})]
+
     (tap> {:cliente cliente
            :bebida bebida
            :acompanhamento acompanhamento
