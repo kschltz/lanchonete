@@ -18,20 +18,24 @@ obs: não esquecer de ativar o ambiente dev no postman
 
 ## Installation
 
-Download from https://github.com/mba-fiap/lanchonete
+Download from https://github.com/kschltz/lanchonete
 
 ## Usage
 
 ### Kubernetes
+
 You can run/deploy the project in Kubernetes using the following command:
 
     $ kubectl apply -f k8s/postgre/ && kubectl apply -f k8s/lanchonete/
 
 #### kubernetes development
+
 If you are using minikube you can run the following helper script to start a fresh minikube and load everything you need:
 
         $ ./bin/minikube-ground-up.sh
+
 It will:
+
 - 1 - Delete the current minikube
 - 2 - Create a new minikube
 - 3 - build the app image
@@ -41,9 +45,11 @@ It will:
 - 8 - open up minikube tunnel for connectivity
 
 ##### You can see what the generated artifacts look like in the architecture diagrams:
+
 [architecture documentation](/doc/architecture.md)
 
 ### Docker compose
+
 From the root of the project, run:
 
     $ docker-compose up --build
