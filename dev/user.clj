@@ -204,7 +204,7 @@
                                 (doto {:body (json/write-str {:produtos (mapv :id [bebida acompanhamento lanche])
                                                               :id-cliente (:id cliente)
                                                               :numero-do-pedido "1"
-                                                              :total 65})
+                                                              :total 5200})
                                        :content-type :json}
                                   tap>)))]
 

@@ -25,11 +25,10 @@
                        (assoc :error/produtos (str "A quantidade de produtos informada está incorreta: "
                                                    number-products)))]
 
-    (when errors
+    (when (seq errors)
       (throw (ex-info "O pedido contêm erros: " errors)))
-
     {:id-cliente (:id-cliente pedido-data)
      :produtos (mapv :id produtos-data)
      :numero-do-pedido (:numero-do-pedido pedido-data)
      :total total
-     :status (:status pedido-data)}))
+     :status m.pedido/recebido}))

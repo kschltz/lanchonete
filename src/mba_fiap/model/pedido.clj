@@ -1,7 +1,7 @@
 (ns mba-fiap.model.pedido)
 
 (def Produtos
-  [:vector {:min 1 :max 3}
+  [:vector {:min 1 :max 4}
    uuid?])
 
 (def recebido "recebido")
@@ -25,4 +25,4 @@
    [:numero-do-pedido string?]
    [:total pos-int?]
    [:status Status]
-   [:created-at string?]])
+   [:created-at {:optional true} string?]])
