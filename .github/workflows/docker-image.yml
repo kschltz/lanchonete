@@ -16,3 +16,11 @@ jobs:
     - uses: actions/checkout@v3
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag lanchonete:$(date +%s)
+    
+    - uses: docker/login-action@v3.0.0
+    - name: docker login
+      with:
+        username: ${{secrets.DOCKER_USER}}
+        password: ${{secrets.DOCKER_PASS}}
+   
+              
