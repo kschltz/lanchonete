@@ -17,7 +17,7 @@ jobs:
         uses: zharinov/clj-toolbox@v1.0.3
 
       - name: where am i
-        run: echo $(ls ./)
+        run: ls ./
 
       - name: run tests
         run: echo $(ls ./) && clojure -T:build build.test
