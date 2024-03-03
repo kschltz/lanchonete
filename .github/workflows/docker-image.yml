@@ -18,8 +18,8 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag lanchonete:$(date +%s)
     
-    - uses: docker/login-action@v3.0.0
     - name: docker login
+    - uses: docker/login-action@v3.0.0
       with:
         username: ${{secrets.DOCKER_USER}}
         password: ${{secrets.DOCKER_PASS}}
