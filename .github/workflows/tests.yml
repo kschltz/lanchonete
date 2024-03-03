@@ -1,0 +1,21 @@
+  name: Run tests
+  on:
+    workflow_dispatch:
+      pull_request:
+        branches:
+          - main
+          - develop
+          - feature/*
+      push:
+        branches:
+          - main
+          - develop
+          - feature/*
+  jobs:
+    run_tests:
+      name: Clojure essential tooling
+      runs-on: ubuntu-latest
+      steps:
+        - name: run tests
+          uses: zharinov/clj-toolbox@v1.0.3
+          run: clojure -T:build test
