@@ -14,9 +14,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag lanchonete:$(date +%s)
+    # - uses: actions/checkout@v3
+    # - name: Build the Docker image
+    #   run: docker build . --file Dockerfile --tag lanchonete:$(date +%s)
     
     - name: docker login
     - uses: docker/login-action@v3.0.0
