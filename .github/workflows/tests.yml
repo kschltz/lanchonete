@@ -7,10 +7,7 @@
           - develop
           - feature/*
       push:
-        branches:
-          - main
-          - develop
-          - feature/*
+
   jobs:
     run_tests:
       name: Clojure essential tooling
