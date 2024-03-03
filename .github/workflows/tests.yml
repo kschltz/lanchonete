@@ -17,4 +17,4 @@ jobs:
         uses: zharinov/clj-toolbox@v1.0.3
 
       - name: run tests
-        run: clojure -T:build test
+        run: ls ./ && clojure -T:build test
