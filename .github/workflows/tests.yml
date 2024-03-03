@@ -11,13 +11,15 @@ on:
 jobs:
   run_tests:
     name: Clojure essential tooling
+    defaults:
+      run:
+        working-directory: ./lanchonete
     runs-on: ubuntu-latest
     steps:
       - name: install clj
         uses: zharinov/clj-toolbox@v1.0.3
 
-      - name: where am i
-        run: ls ./ > echo
+
 
       - name: run tests
         run: clojure -T:build ci
