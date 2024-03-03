@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - develop
   release:
     types: [published]
 jobs:
@@ -12,7 +13,8 @@ jobs:
     name: Clojure essential tooling
     runs-on: ubuntu-latest
     steps:
-      - name: run tests
+      - name: install clj
         uses: zharinov/clj-toolbox@v1.0.3
-        with:
-          command: "clojure -T:build test"
+
+      - name: run tests
+        run: clojure -T:build test
