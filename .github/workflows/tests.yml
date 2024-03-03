@@ -18,4 +18,5 @@
       steps:
         - name: run tests
           uses: zharinov/clj-toolbox@v1.0.3
-          run: clojure -T:build test
+          with:
+           command: "clojure -T:build test"
