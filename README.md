@@ -16,6 +16,11 @@ obs: não esquecer de ativar o ambiente dev no postman
 
 [doc](/doc/routes.md)
 
+
+### Documentação do banco de dados
+
+[doc](/doc/database.md)
+
 ## Installation
 
 Download from https://github.com/kschltz/lanchonete
