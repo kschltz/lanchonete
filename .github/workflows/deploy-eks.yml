@@ -53,4 +53,4 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ steps.commit.outputs.short }}
         run: |
-          kubectl apply -f -r k8s/
+          kubectl apply -f -r  ./k8s
