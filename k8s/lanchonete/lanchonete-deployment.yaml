@@ -37,7 +37,6 @@ spec:
                 name: lanchonete-config
 
 ---
-
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
