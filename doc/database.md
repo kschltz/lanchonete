@@ -3,15 +3,21 @@
 ![img.png](lanchone-database.png)
 
 
-### Entidades e Atributos:
+### Tabelas:
 
-    Cliente:
+- **Cliente**
+
+Tabela responsavel por salvar dados dos clientes.
+
         id: Identificador único do cliente.
         cpf: Número de CPF do cliente.
         nome: Nome completo do cliente.
         email: Endereço de e-mail do cliente.
 
-    Pedido:
+- **Pedido**
+
+Tabela responsavel por guardar dados do pedido, todo pedido feito é salvo nessa tabela.
+
         id_cliente: Chave estrangeira que relaciona o pedido ao cliente.
         numero_do_pedido: Número único do pedido.
         produtos: Lista de produtos incluídos no pedido.
@@ -19,13 +25,20 @@
         total: Valor total do pedido.
         created_at: Data e hora de criação do pedido.
 
-    Pagamento:
+- **Pagamento**
+
+Tabela responsavel por persistir os pagamentos dos pedidos.
+
+        id: Identificador único do pagamento
         id_pedido: Chave estrangeira que relaciona o pagamento ao pedido.
         total: Valor total do pagamento.
         created_at: Data e hora de criação do pagamento.
         status: Status do pagamento (por exemplo, “aprovado”, “pendente”).
 
-    Produto:
+- **Produto**
+
+Tabela responsavel por guardar dados de produtos.
+
         id: Identificador único do produto.
         nome: Nome do produto.
         descricao: Descrição detalhada do produto.
