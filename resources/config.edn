@@ -34,6 +34,9 @@
  {:repository-name :pagamento
   :connection #ig/ref :mba-fiap.datasource.postgres/db}
 
+ :mba-fiap.service.auth/auth
+ {:url #or [#env LAMBDA_URL "http://localhost"]}
+
  :mba-fiap.adapter.http.server/server
  {:env #profile {:default :dev
                  :test :test
@@ -46,4 +49,5 @@
                 :repository/cliente #ig/ref :repository/cliente
                 :repository/produto #ig/ref :repository/produto
                 :repository/pedido #ig/ref :repository/pedido
-                :repository/pagamento #ig/ref :repository/pagamento}}}
+                :repository/pagamento #ig/ref :repository/pagamento
+                :auth #ig/ref :mba-fiap.service.auth/auth}}}

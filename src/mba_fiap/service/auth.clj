@@ -2,7 +2,13 @@
   (:require
    [clj-http.client :as client]
    [clojure.data.json :as json]
-   [clojure.tools.logging :as log]))
+   [clojure.tools.logging :as log]
+   [integrant.core :as ig]))
+
+(defmethod ig/init-key ::auth
+  [_ {:keys [url]}]
+  (tap> url)
+  url)
 
 (defn external-auth [api-url email password]
   (log/info "Sending authentication request" email)
@@ -23,11 +29,8 @@
       (log/error e "Failed to authenticate" email)
       {:status :error :message "Failed to authenticate"})))
 
-; Needs to set this as a environment variable
-(def url "https://clylws7uvb.execute-api.us-east-1.amazonaws.com/v1/authenticate")
-
-(defn auth [email password]
+(defn autenticar [lambda-url email password]
   (let
-   [data (external-auth url email password)]
+   [data (external-auth lambda-url email password)]
     (:token data)))
 

@@ -26,11 +26,12 @@
 (defn autenticar-cliente
   [request]
   (let [repository (get-in request [:app-context :repository/cliente])
+        lambda-url (get-in request [:app-context :auth])
         {:keys [cpf password]} (:json-params request)
         client-data (cliente.service/buscar-por-cpf repository cpf)
         email (:email client-data)]
     (if email
-      (let [result (auth.service/auth email password)]
+      (let [result (auth.service/autenticar lambda-url email password)]
         {:status 200
          :headers {"Content-Type" "application/json"}
          :body {:email email
@@ -41,15 +42,16 @@
 
 (defn cliente-routes
   []
-  [["/cliente" ^:interceptors [(body-params/body-params)
-                               middlewares/params
-                               middlewares/keyword-params]
+  [["/cliente"
+    ^:interceptors [(body-params/body-params)
+                    middlewares/params
+                    middlewares/keyword-params]
     {:post `cadastrar-cliente}]
 
-   ["/autenticar" ^:interceptors [(body-params/body-params)
-                                  middlewares/params
-                                  middlewares/keyword-params]
+   ["/autenticar"
+    ^:interceptors [(body-params/body-params)
+                    middlewares/params
+                    middlewares/keyword-params]
     {:post `autenticar-cliente}]
 
-   ["/cliente/:cpf"
-    {:get `buscar-por-cpf}]])
+   ["/cliente/:cpf" {:get `buscar-por-cpf}]])
