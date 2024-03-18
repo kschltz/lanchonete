@@ -126,3 +126,14 @@ curl --location 'http://localhost:8080/pagamento' \
 ```cURL
 curl --location 'localhost:8080/pagamento/d7ce1a59-71da-494b-a115-454b1b970c4a'
 ```
+
+#### Autenticar um usuário
+
+```cURL
+curl --location 'http://localhost:8080/autenticar' \
+--header 'Content-Type: application/json' \
+--data '{
+    "cpf": "{{cpf}}",
+    "password": "{{password}}"
+}'
+```
