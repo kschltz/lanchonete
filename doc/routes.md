@@ -19,7 +19,7 @@ Rotas responsável pela manutenção de produtos no sistema;
 - categorias: `lanche`, `sobremesa`, `bebida`, `acompanhamento`;
 
 ```cURL
-curl --location 'http://localhost:8080/produtos/<categoria>'
+curl --location 'http://10.123.3.156:8080/produtos/lanche'
 ```
 
 Nesse caso “lanche” é a categoria buscada.
