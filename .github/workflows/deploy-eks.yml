@@ -48,6 +48,15 @@ jobs:
       - name: Update kube config
         run: aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region $AWS_REGION
 
+      - name: Get parameters
+        uses: dkershner6/aws-ssm-getparameters-action@v2
+        with:
+          parameterPairs: "/lambda-auth/lambdaUrl = LAMBDA_URL"
+          #"/database/user = POSTGRES_USER,
+          #/database/password = POSTGRES_PASSWORD,
+          #/database/host = POSTGRES_HOST,
+          # The part before equals is the ssm parameterName, and after is the ENV Variable name for the workflow.
+          # No limit on number of parameters. You can put new lines and spaces in as desired, they get trimmed out.
 
       - name: Deploy to EKS
         env:
