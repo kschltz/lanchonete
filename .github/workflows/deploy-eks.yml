@@ -7,7 +7,7 @@ on:
 
 env:
   ECR_REPOSITORY: lanchonete-api
-  EKS_CLUSTER_NAME: my-eks-cluster
+  EKS_CLUSTER_NAME: mba-fiap-api
   AWS_REGION: us-east-1
 
 jobs:
