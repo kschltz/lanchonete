@@ -1,22 +1,27 @@
 (ns mba-fiap.service.auth
   (:require
-   [clj-http.client :as client]
-   [clojure.data.json :as json]
-   [clojure.tools.logging :as log]
-   [integrant.core :as ig]))
+    [clj-http.client :as client]
+    [clojure.data.json :as json]
+    [clojure.tools.logging :as log]
+    [integrant.core :as ig]))
+
 
 (defmethod ig/init-key ::auth
   [_ {:keys [url]}]
   (tap> url)
   url)
 
-(defn external-auth [api-url email password]
+
+(defn external-auth
+  [lambda-url email password]
   (log/info "Sending authentication request" email)
   (try
-    (let [response (client/post api-url
-                                {:content-type :json
-                                 :body (json/write-str {:email email
-                                                        :password password})})
+    (let [response (client/post
+                     (str (lambda-url "/authenticate"))
+                     {:content-type :json
+                      :body (json/write-str
+                              {:email email
+                               :password password})})
           parsed-response (json/read-str (:body response) :key-fn keyword)
           auth-result (:AuthenticationResult parsed-response)
           access-token (:AccessToken auth-result)]
@@ -29,8 +34,10 @@
       (log/error e "Failed to authenticate" email)
       {:status :error :message "Failed to authenticate"})))
 
-(defn autenticar [lambda-url email password]
+
+(defn autenticar
+  [lambda-url email password]
   (let
-   [data (external-auth lambda-url email password)]
+    [data (external-auth lambda-url email password)]
     (:token data)))
 
