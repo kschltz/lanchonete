@@ -54,6 +54,7 @@ jobs:
           parameterPairs: "/lambda-auth/lambdaUrl = LAMBDA_URL, /database/user = POSTGRES_USER, /database/password = POSTGRES_PASSWORD, /database/hostname = POSTGRES_HOST, /database/port = POSTGRES_PORT"
           # The part before equals is the ssm parameterName, and after is the ENV Variable name for the workflow.
           # No limit on number of parameters. You can put new lines and spaces in as desired, they get trimmed out.
+          withDecryption: "true"
 
       - name: Deploy to EKS
         env:
