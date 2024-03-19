@@ -59,8 +59,6 @@ jobs:
         uses: swdotcom/update-and-apply-kubernetes-configs@v1.3.0
         env:
           POSTGRES_DB: "postgresdb"
-          HTTP_PORT: "8080"
-          POSTGRES_PORT: "5432"
         with:
           k8-config-file-paths: |
             k8s/lanchonete/lanchonete-configmap.yml.yaml
