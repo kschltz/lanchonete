@@ -1,7 +1,7 @@
 name: Deploy to EKS
 
 on:
-
+  workflow_dispatch:
   push:
     branches: [ main ]
 
@@ -55,11 +55,16 @@ jobs:
           # The part before equals is the ssm parameterName, and after is the ENV Variable name for the workflow.
           # No limit on number of parameters. You can put new lines and spaces in as desired, they get trimmed out.
 
+      - name: Set EKS pod variables
+        uses: swdotcom/update-and-apply-kubernetes-configs@v1
+        with:
+          k8-config-file-paths: k8s/lanchonete/lanchonete-configmap.yaml
+          replacement-method: all
+
       - name: Deploy to EKS
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ steps.commit.outputs.short }}
         run: |
           kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml && \
-          kubectl apply -f k8s/postgre && \
           kubectl apply -f k8s/lanchonete

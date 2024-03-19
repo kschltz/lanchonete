@@ -5,9 +5,17 @@ metadata:
   labels:
     app: lanchonete
 data:
-  HTTP_PORT: "8080"
-  POSTGRES_PORT: "5432"
-  POSTGRES_DB: "postgresdb"
-  POSTGRES_USER: "postgres"
-  POSTGRES_PASSWORD: "psltest"
-  POSTGRES_HOST: "postgres.default.svc.cluster.local"
+  HTTP_PORT: ${HTTP_PORT}
+  ## "8080"
+  POSTGRES_PORT: ${POSTGRES_PORT}
+  ## "5432"
+  POSTGRES_DB: ${POSTGRES_DB}
+  ## "postgresdb"
+  POSTGRES_USER: ${POSTGRES_USER}
+  ## "postgres"
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  ## "psltest"
+  POSTGRES_HOST: ${POSTGRES_HOST}
+  ## "postgres.default.svc.cluster.local"
+
+  LAMBDA_URL: ${LAMBDA_URL}
