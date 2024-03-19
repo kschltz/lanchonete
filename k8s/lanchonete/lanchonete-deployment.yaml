@@ -12,12 +12,10 @@ spec:
       labels:
         app: lanchonete
     spec:
-      imagePullSecrets:
-        - name: regcred
       containers:
         - name: lanchonete
           image: kschltz/lanchonete:latest # Sets Image to be used from local repository
-          imagePullPolicy: "IfNotPresent"
+          imagePullPolicy: "Always"
           resources:
             limits:
               cpu: 1000m
