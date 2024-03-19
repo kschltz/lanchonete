@@ -1,7 +1,8 @@
 (ns mba-fiap.datasource.postgres
   (:require [clojure.string :as str]
             [integrant.core :as ig]
-            [next.jdbc :as jdbc]))
+            [next.jdbc :as jdbc])
+  (:import [java.net URL]))
 
 (defn ^:private ensure-http-protocol [url]
   (if (or (str/starts-with? url "http://")
@@ -11,7 +12,7 @@
 
 (defn ^:private get-hostname [host-port]
   (let [endpoint (ensure-http-protocol host-port)]
-    (.getHost (java.net.URL. endpoint))))
+    (.getHost (URL. endpoint))))
 
 (defmethod ig/init-key ::db
   [_ {:keys [spec]
@@ -25,6 +26,7 @@
 
     (assoc
       component
+      :spec updated-spec
       :datasource
       (jdbc/get-datasource updated-spec))))
 
