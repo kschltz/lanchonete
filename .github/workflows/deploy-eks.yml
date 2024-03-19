@@ -50,9 +50,6 @@ jobs:
 
       - name: Get parameters
         uses: dkershner6/aws-ssm-getparameters-action@v2
-        env:
-          POSTGRES_DB: "postgresdb"
-          HTTP_PORT: "8080"
         with:
           parameterPairs: "/lambda-auth/lambdaUrl = LAMBDA_URL, /database/user = POSTGRES_USER, /database/password = POSTGRES_PASSWORD, /database/hostname = POSTGRES_HOST, /database/port = POSTGRES_PORT"
           # The part before equals is the ssm parameterName, and after is the ENV Variable name for the workflow.
@@ -60,6 +57,9 @@ jobs:
 
       - name: Set EKS pod variables
         uses: swdotcom/update-and-apply-kubernetes-configs@v1
+        env:
+          POSTGRES_DB: "postgresdb"
+          HTTP_PORT: "8080"
         with:
           k8-config-file-paths: k8s/lanchonete/lanchonete-configmap.yml.yaml
           replacement-method: all
