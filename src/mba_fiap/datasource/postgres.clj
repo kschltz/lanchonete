@@ -18,7 +18,7 @@
       :as component}]
   (println "Initializing database connection: " component)
   (println "\n\nHOST: " (try
-                          (:host updated-spec)
+                          (:host (update spec :host get-hostname))
                           (catch Exception e
                             e)))
   (let [updated-spec (update spec :host get-hostname)]
