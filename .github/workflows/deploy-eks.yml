@@ -62,8 +62,6 @@ jobs:
         with:
           k8-config-file-paths: |
             k8s/lanchonete/lanchonete-configmap.yml.yaml
-            k8s/lanchonete/lanchonete-deployment.yaml
-            k8s/lanchonete/lanchonete-service.yaml
           replacement-method: all
 
       - name: Deploy to EKS
