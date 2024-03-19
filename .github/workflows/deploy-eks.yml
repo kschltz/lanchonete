@@ -74,3 +74,4 @@ jobs:
           kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml && \
           kubectl apply -f k8s/lanchonete/lanchonete-deployment.yaml
           kubectl apply -f k8s/lanchonete/lanchonete-service.yaml
+          kubectl apply -f k8s/postgres/
