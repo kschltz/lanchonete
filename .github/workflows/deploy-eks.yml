@@ -56,7 +56,7 @@ jobs:
           # No limit on number of parameters. You can put new lines and spaces in as desired, they get trimmed out.
 
       - name: Set EKS pod variables
-        uses: swdotcom/update-and-apply-kubernetes-configs@v1
+        uses: swdotcom/update-and-apply-kubernetes-configs@v1.3.0
         env:
           POSTGRES_DB: "postgresdb"
           HTTP_PORT: "8080"
