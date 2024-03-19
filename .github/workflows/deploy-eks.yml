@@ -60,6 +60,7 @@ jobs:
         env:
           POSTGRES_DB: "postgresdb"
           HTTP_PORT: "8080"
+          POSTGRES_PORT: "5432"
         with:
           k8-config-file-paths: |
             k8s/lanchonete/lanchonete-configmap.yml.yaml
