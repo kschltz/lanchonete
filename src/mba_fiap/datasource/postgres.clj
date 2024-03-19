@@ -18,6 +18,7 @@
       :as component}]
   (println "Initializing database connection: " component)
   (let [updated-spec (update spec :host get-hostname)]
+    (println "HOST: " (:host updated-spec))
     (assoc
       component
       :datasource
