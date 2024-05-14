@@ -16,12 +16,11 @@
   [lambda-url email password]
   (log/info "Sending authentication request" email)
   (try
-    (let [response (client/post
-                     (str (lambda-url "/authenticate"))
-                     {:content-type :json
-                      :body (json/write-str
-                              {:email email
-                               :password password})})
+    (let [response (client/post (str lambda-url "/authenticate")
+                                {:content-type :json
+                                 :body         (json/write-str
+                                                 {:email    email
+                                                  :password password})})
           parsed-response (json/read-str (:body response) :key-fn keyword)
           auth-result (:AuthenticationResult parsed-response)
           access-token (:AccessToken auth-result)]

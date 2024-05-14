@@ -1,7 +1,219 @@
 (ns mba-fiap.lanchonete-test
-  (:require [clojure.test :refer :all]
-            [mba-fiap.lanchonete :refer :all]))
+  (:require [clj-test-containers.core :as tc]
+            [clojure.data.json :as json]
+            [clojure.test :refer :all]
+            [hato.client :as hc]
+            [clj-http.client :as clj-http]
+            [integrant.core :as ig]
+            [malli.generator :as mg]
+            [mba-fiap.lanchonete :as core]
+            [mba-fiap.model.cliente :as cliente]
+            [mba-fiap.model.pedido :as pedido]
+            [mba-fiap.model.produto :as produto]))
 
-(deftest a-test
-  (testing "FIXME, I test nothing."
-    (is (= 0 0))))
+(defonce db-state (atom ::not-initialized))
+
+(defn postgre-fixture [f]
+  (let [pg-container
+        (-> (tc/create {:image-name    "postgres:16.3"
+                        :exposed-ports [5432]
+                        :env-vars      {"POSTGRES_PASSWORD" "password"
+                                        "POSTGRES_USER"     "postgres"
+                                        "POSTGRES_DB"       "postgres"}})
+            (tc/bind-filesystem! {:host-path      "/tmp"
+                                  :container-path "/opt"})
+            (tc/start!))]
+    (reset! db-state pg-container)
+    (try
+      (f)
+      (catch Exception e
+        (prn e)))
+    (tc/stop! pg-container)
+    (reset! db-state ::not-initialized)))
+
+(defonce system-state (atom ::not-initialized))
+
+(defn system-fixture [f]
+  (let [conf (core/prep-config :test)
+        conf (-> conf
+                 (assoc-in [:mba-fiap.datasource.postgres/db :spec :host] (:host @db-state))
+                 (assoc-in [:mba-fiap.datasource.postgres/db :spec :port] (get (:mapped-ports @db-state) 5432))
+                 (assoc-in [:mba-fiap.adapter.http.server/server :join?] false))
+        system (ig/init conf)]
+    (reset! system-state system)
+    (try
+      (f)
+      (catch Exception e
+        (prn e)))
+    (ig/halt! system)
+    (reset! system-state ::not-initialized)))
+
+
+
+(use-fixtures :once (join-fixtures [postgre-fixture system-fixture]))
+
+
+(deftest test-main
+  (testing "main startup ok"
+    (let [{:keys [body status]} (hc/get "http://localhost:8080/produtos/lanche")]
+      (is (= 200 status))
+      (is (= "[]" body)))))
+
+
+(deftest cliente-crud
+  (let [by-cpf (mg/generate cliente/CPFIdentifiedCliente)
+        by-email (mg/generate cliente/EmailIdentifiedCliente)
+        anonymous (mg/generate cliente/AnonymousCliente)]
+    (testing "Insert"
+      (let [[cpf email anon] (->> [by-cpf by-email anonymous]
+                                  (map #(hash-map :headers {"content-type" "application/json"}
+                                                  :body (json/write-str %)
+
+                                                  :throw-exceptions false))
+                                  (map #(hc/post "http://localhost:8080/cliente" %))
+                                  (mapv #(update % :body json/read-str))
+                                  doall)]
+
+        (is (= 200 (:status cpf)))
+        (is (= 200 (:status email)))
+        (is (= 200 (:status anon)))))
+
+    (testing "Query by CPF"
+      (let [{:keys [body] :as result} (hc/get (str "http://localhost:8080/cliente/" (:cpf by-cpf)))
+            body (json/read-str body :key-fn keyword)]
+        (is (= 200 (:status result)))
+        (is (= (:cpf by-cpf) (:cpf body)))))
+
+    (testing "Autenticar cliente - ok"
+      (with-redefs [clj-http/post (constantly
+                                    {:status 200
+                                     :body   (json/write-str
+                                               {:AuthenticationResult
+                                                {:AccessToken "xarlinho"}})})]
+        (let [{:keys [body] :as result} (hc/post "http://localhost:8080/autenticar"
+                                                 {:headers          {"content-type" "application/json"}
+                                                  :throw-exceptions false
+                                                  :body             (json/write-str {:cpf      (:cpf by-cpf)
+                                                                                     :email    "tchubironson@email.com"
+                                                                                     :password "password"})})
+              body (json/read-str body :key-fn keyword)]
+          (is (= 200 (:status result)))
+          (is (contains? body :email))
+          (is (contains? body :token)))))
+    (testing "Autenticar cliente - not ok"
+      (with-redefs [clj-http/post (constantly
+                                    {:status 404
+                                     :body   (json/write-str {})})]
+        (let [{:keys [body] :as result} (hc/post "http://localhost:8080/autenticar"
+                                                 {:headers          {"content-type" "application/json"}
+                                                  :throw-exceptions false
+                                                  :body             (json/write-str {:cpf      (:cpf by-cpf)
+                                                                                     :email    "tchubironson25@email.com"
+                                                                                     :password "password"})})
+              body (json/read-str body :key-fn keyword)]
+          (is (= 400 (:status result)))
+          (is (= {:error "The client does not exists in our system"} body)))))))
+
+(deftest produto-tests
+  (let [new-product (mg/generate produto/Produto)
+        cleanup (fn [p] (-> (dissoc p :descricao :id :preco_centavos)
+                            (assoc :preco-centavos (:preco_centavos p (:preco-centavos p)))))]
+    (testing "criar-produto"
+      (let [response (hc/post "http://localhost:8080/produto"
+                              {:headers          {"content-type" "application/json"}
+                               :body             (json/write-str new-product)
+                               :throw-exceptions false})
+            body (json/read-str (:body response) :key-fn keyword)]
+        (is (= 200 (:status response)))
+        (is (= (cleanup new-product) (cleanup body)))))
+
+    (testing "listar-produtos"
+      (let [response (hc/get (str "http://localhost:8080/produtos/" (:categoria new-product))
+                             {:throw-exceptions false})
+            [body] (json/read-str (:body response) :key-fn keyword)]
+        (is (= 200 (:status response)))
+        (is (= (cleanup new-product) (cleanup body)))))
+
+    (testing "editar-produto"
+      (let [updated-product (assoc new-product :descricao "Updated Name")
+            response (hc/get (str "http://localhost:8080/produtos/" (:categoria new-product))
+                             {:headers          {"content-type" "application/json"}
+                              :throw-exceptions false})
+            [{:keys [id]}] (json/read-str (:body response) :key-fn keyword)
+            response (hc/put (str "http://localhost:8080/produto/" id)
+                             {:headers          {"content-type" "application/json"}
+                              :body             (json/write-str updated-product)
+                              :throw-exceptions false})
+            body (-> (json/read-str (:body response) :key-fn keyword)
+                     (dissoc :id))]
+        (is (= 200 (:status response)))
+        (is (= updated-product body))))
+
+
+    (testing "deletar-produto"
+      (let [response (hc/get (str "http://localhost:8080/produtos/" (:categoria new-product))
+                             {:headers          {"content-type" "application/json"}
+                              :throw-exceptions false})
+            [{:keys [id]}] (json/read-str (:body response) :key-fn keyword)
+            response (hc/delete (str "http://localhost:8080/produto/" (str id))
+                                {:throw-exceptions false})]
+        (is (= 200 (:status response)))))))
+
+(defn setup-pedido []
+  (let [by-cpf (mg/generate cliente/CPFIdentifiedCliente)
+        by-cpf (-> (hc/post "http://localhost:8080/cliente" {:headers          {"content-type" "application/json"}
+                                                             :body             (json/write-str by-cpf)
+                                                             :throw-exceptions false})
+                   :body
+                   (json/read-str :key-fn keyword))
+        lanche (assoc (mg/generate produto/Produto) :categoria "lanche")
+        bebida (assoc (mg/generate produto/Produto) :categoria "bebida")
+        acompanhamento (assoc (mg/generate produto/Produto) :categoria "acompanhamento")
+        [lanche bebida acompanhamento] (->> [lanche bebida acompanhamento]
+                                            (map #(hc/post "http://localhost:8080/produto"
+                                                           {:headers          {"content-type" "application/json"}
+                                                            :body             (json/write-str %)
+                                                            :throw-exceptions false}))
+                                            (map (comp #(json/read-str % :key-fn keyword) :body)))]
+    (-> (mg/generate pedido/Pedido)
+        (assoc :total (reduce + (map :preco-centavos [lanche bebida acompanhamento])))
+        (assoc :produtos [(parse-uuid (:id lanche))
+                          (parse-uuid (:id bebida))
+                          (parse-uuid (:id acompanhamento))]
+               :id-cliente (:id by-cpf)))))
+
+(deftest pedido-tests
+  (testing "cadastrar-pedido"
+    (let [new-pedido (setup-pedido)
+          response (hc/post "http://localhost:8080/pedido"
+                            {:headers          {"content-type" "application/json"}
+                             :body             (json/write-str new-pedido)
+                             :throw-exceptions false})
+          body (json/read-str (:body response) :key-fn keyword)]
+      (is (= 200 (:status response)))
+      (is (uuid? (parse-uuid (:id body))))))
+
+  (testing "listar-pedidos"
+    (let [response (hc/get "http://localhost:8080/pedidos"
+                           {:throw-exceptions false})
+          body (json/read-str (:body response) :key-fn keyword)]
+      (is (= 200 (:status response)))
+      (is (= 1 (count body)))))
+
+  (testing "editar-pedido"
+    (let [new-pedido (setup-pedido)
+          response (hc/post "http://localhost:8080/pedido"
+                            {:headers          {"content-type" "application/json"}
+                             :body             (json/write-str new-pedido)
+                             :throw-exceptions false})
+          pedido (json/read-str (:body response) :key-fn keyword)
+          updated-pedido (-> new-pedido
+                             (assoc :status "finalizado")
+                             (dissoc :created-at))
+          response (hc/put (str "http://localhost:8080/pedido/" (:id pedido))
+                           {:headers          {"content-type" "application/json"}
+                            :body             (json/write-str updated-pedido)
+                            :throw-exceptions false})
+          body (json/read-str (:body response) :key-fn keyword)]
+      (is (= 200 (:status response)))
+      (is (= "finalizado" (:status body))))))
