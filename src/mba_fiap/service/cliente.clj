@@ -1,8 +1,9 @@
 (ns mba-fiap.service.cliente
   (:require
-   [mba-fiap.base.validation :as validation]
-   [mba-fiap.model.cliente :as cliente]
-   [mba-fiap.value-object.cpf :as cpf])
+    [mba-fiap.base.validation :as validation]
+    [mba-fiap.model.cliente :as cliente]
+    [mba-fiap.value-object.cpf :as cpf]
+    [mba-fiap.value-object.email :as email])
   (:import [mba_fiap.repository.repository Repository]))
 
 (defn cadastrar-cliente [^Repository repository data]

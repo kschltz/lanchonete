@@ -27,18 +27,24 @@
   [request]
   (let [repository (get-in request [:app-context :repository/cliente])
         lambda-url (get-in request [:app-context :auth])
-        {:keys [cpf password]} (:json-params request)
+        {:keys [cpf password email]} (:json-params request)
         client-data (cliente.service/buscar-por-cpf repository cpf)
-        email (:email client-data)]
-    (if email
-      (let [result (auth.service/autenticar lambda-url email password)]
-        {:status 200
+        email (or (:email client-data) email)]
+    (try
+      (if-let [result (auth.service/autenticar lambda-url email password)]
+        {:status  200
          :headers {"Content-Type" "application/json"}
-         :body {:email email
-                :token result}})
-      {:status 400
-       :headers {"Content-Type" "application/json"}
-       :body {:error "The client does not exists in or system"}})))
+         :body    {:email email
+                   :token result}}
+
+        {:status  400
+         :headers {"Content-Type" "application/json"}
+         :body    {:error "The client does not exists in our system"}})
+
+      (catch Exception e
+        {:status  500
+         :headers {"Content-Type" "application/json"}
+         :body    {:error (.getMessage e)}}))))
 
 (defn cliente-routes
   []
