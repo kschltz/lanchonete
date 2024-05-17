@@ -17,13 +17,11 @@
                              (update :produtos #(mapv parse-uuid %)))
              produtos   (produto.service/listar-por-ids repository-produto (:produtos parsed-data))
              to-create (usecase.p/criar-pedido produtos parsed-data)
-             _ (tap> [::20 to-create])
              result     (pedido.service/checkout repository-pedido to-create)]
          {:status  200
           :headers {"Content-Type" "application/json"}
           :body    result})
        (catch Exception e
-         (tap> e)
          {:status  500
           :headers {"Content-Type" "application/json"}
           :body    (str e)})))

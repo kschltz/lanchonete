@@ -1,53 +1,57 @@
 {:mba-fiap.datasource.postgres/db
- {:spec {:dbtype "postgresql"
-         :classname "org.postgresql.Driver"
+ {:spec {:dbtype      "postgresql"
+         :classname   "org.postgresql.Driver"
          :auto-commit true
-         :read-only false
+         :read-only   false
          :subprotocol "postgresql"
-         :user #or [#env POSTGRES_USER "postgres"]
-         :password #or [#env POSTGRES_PASSWORD "password"]
-         :host #or [#env POSTGRES_HOST "localhost"]
-         :port #profile {:default #or [#env POSTGRES_PORT 5400]}}}
+         :user        #or [#env POSTGRES_USER "postgres"]
+         :password    #or [#env POSTGRES_PASSWORD "password"]
+         :host        #or [#env POSTGRES_HOST "localhost"]
+         :port        #profile {:default #or [#env POSTGRES_PORT 5432]}}}
 
  :mba-fiap.datasource.migratus/migratus
- {:store :database
-  :migration-dir "migrations/"
+ {:store                :database
+  :migration-dir        "migrations/"
   :init-in-transaction? false
-  :migration-table-name "app_migrations"
-  :properties {:map {:migratus {:database #or [#env POSTGRES_DB "postgres"]}}}
-  :db {:dbname #or [#env POSTGRES_DB "postgres"]
-       :datasource #ig/ref :mba-fiap.datasource.postgres/db}}
+  :reset-on-init?       #profile{:dev     true
+                                 :test    true
+                                 :default false}
+  :migration-table-name "migrations"
+  :properties           {:map {:migratus {:database #or [#env POSTGRES_DB "postgres"]}}}
+  :db                   {:dbname     #or [#env POSTGRES_DB "postgres"]
+                         :datasource #ig/ref :mba-fiap.datasource.postgres/db}}
 
  [:mba-fiap.repository.repository/repository :repository/cliente]
  {:repository-name :cliente
-  :connection #ig/ref :mba-fiap.datasource.postgres/db}
+  :connection      #ig/ref :mba-fiap.datasource.postgres/db}
 
  [:mba-fiap.repository.repository/repository :repository/produto]
  {:repository-name :produto
-  :connection #ig/ref :mba-fiap.datasource.postgres/db}
+  :connection      #ig/ref :mba-fiap.datasource.postgres/db}
 
  [:mba-fiap.repository.repository/repository :repository/pedido]
  {:repository-name :pedido
-  :connection #ig/ref :mba-fiap.datasource.postgres/db}
+  :connection      #ig/ref :mba-fiap.datasource.postgres/db}
 
  [:mba-fiap.repository.repository/repository :repository/pagamento]
  {:repository-name :pagamento
-  :connection #ig/ref :mba-fiap.datasource.postgres/db}
+  :connection      #ig/ref :mba-fiap.datasource.postgres/db}
 
  :mba-fiap.service.auth/auth
  {:url #or [#env LAMBDA_URL "http://localhost"]}
 
  :mba-fiap.adapter.http.server/server
- {:env #profile {:default :dev
-                 :test :test
-                 :prod :prod}
-  :port #long #profile {:default #or [#env HTTP_PORT 8080]}
-  :join? #profile {:default true
-                   :dev false}
+ {:env         #profile {:default :dev
+                         :test    :test
+                         :prod    :prod}
+  :port        #long #profile {:default #or [#env HTTP_PORT 8080]}
+  :join?       #profile {:default true
+                         :test    false
+                         :dev     false}
 
-  :app-context {:migrations #ig/ref :mba-fiap.datasource.migratus/migratus
-                :repository/cliente #ig/ref :repository/cliente
-                :repository/produto #ig/ref :repository/produto
-                :repository/pedido #ig/ref :repository/pedido
+  :app-context {:migrations           #ig/ref :mba-fiap.datasource.migratus/migratus
+                :repository/cliente   #ig/ref :repository/cliente
+                :repository/produto   #ig/ref :repository/produto
+                :repository/pedido    #ig/ref :repository/pedido
                 :repository/pagamento #ig/ref :repository/pagamento
-                :auth #ig/ref :mba-fiap.service.auth/auth}}}
+                :auth                 #ig/ref :mba-fiap.service.auth/auth}}}

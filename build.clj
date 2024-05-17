@@ -1,6 +1,7 @@
 (ns build
   (:refer-clojure :exclude [test])
-  (:require [clojure.tools.deps :as t]
+  (:require [clojure.java.shell :as sh]
+            [clojure.tools.deps :as t]
             [clojure.tools.build.api :as b]))
 
 (def lib 'net.clojars.mba-fiap/lanchonete)
@@ -31,7 +32,7 @@
          :ns-compile [main]))
 
 (defn ci "Run the CI pipeline of tests (and build the uberjar)." [opts]
-  (test opts)
+
   (b/delete {:path "target"})
   (let [opts (uber-opts opts)]
     (println "\nCopying source...")
@@ -39,5 +40,11 @@
     (println (str "\nCompiling " main "..."))
     (b/compile-clj opts)
     (println "\nBuilding JAR...")
-    (b/uber opts))
+    (b/uber opts)
+    (test opts)
+    (println "\nRunning Cucumber tests...\n"
+      (sh/sh "clojure" "-M:test:cucumber" "-g" "./test/mba_fiap/" "./test/resources/")))
   opts)
+
+(comment
+  (b/compile-clj (uber-opts {})))

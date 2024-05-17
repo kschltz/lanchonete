@@ -6,7 +6,6 @@
    [io.pedestal.http.route :as route]
    [io.pedestal.interceptor.helpers :as interceptor]
    [mba-fiap.adapter.cliente-rest :as cliente-rest]
-   [mba-fiap.adapter.pagamento-rest :as pagamento-rest]
    [mba-fiap.adapter.pedido-rest :as pedido-rest]
    [mba-fiap.adapter.produto-rest :as produto-rest]))
 
@@ -33,8 +32,7 @@
    (into []
          [(cliente-rest/cliente-routes)
           (produto-rest/produto-routes)
-          (pedido-rest/pedido-routes)
-          (pagamento-rest/pagamento-routes)])))
+          (pedido-rest/pedido-routes)])))
 
 (defn add-interceptors
   [service-map & interceptors]
