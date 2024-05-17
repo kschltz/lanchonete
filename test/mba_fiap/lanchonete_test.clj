@@ -1,53 +1,30 @@
 (ns mba-fiap.lanchonete-test
-  (:require [clj-test-containers.core :as tc]
+  (:require [clj-http.client :as clj-http]
             [clojure.data.json :as json]
             [clojure.test :refer :all]
             [hato.client :as hc]
-            [clj-http.client :as clj-http]
-            [integrant.core :as ig]
             [malli.generator :as mg]
-            [mba-fiap.lanchonete :as core]
             [mba-fiap.model.cliente :as cliente]
             [mba-fiap.model.pedido :as pedido]
-            [mba-fiap.model.produto :as produto]))
-
-(defonce db-state (atom ::not-initialized))
+            [mba-fiap.model.produto :as produto]
+            [mba-fiap.system :as system]))
 
 (defn postgre-fixture [f]
-  (let [pg-container
-        (-> (tc/create {:image-name    "postgres:16.3"
-                        :exposed-ports [5432]
-                        :env-vars      {"POSTGRES_PASSWORD" "password"
-                                        "POSTGRES_USER"     "postgres"
-                                        "POSTGRES_DB"       "postgres"}})
-            (tc/bind-filesystem! {:host-path      "/tmp"
-                                  :container-path "/opt"})
-            (tc/start!))]
-    (reset! db-state pg-container)
+  (let [pg-container (system/start-pg-container)]
+
     (try
       (f)
       (catch Exception e
-        (prn e)))
-    (tc/stop! pg-container)
-    (reset! db-state ::not-initialized)))
-
-(defonce system-state (atom ::not-initialized))
+        (prn e))
+      (finally (system/stop-pg-container)))))
 
 (defn system-fixture [f]
-  (let [conf (core/prep-config :test)
-        conf (-> conf
-                 (assoc-in [:mba-fiap.datasource.postgres/db :spec :host] (:host @db-state))
-                 (assoc-in [:mba-fiap.datasource.postgres/db :spec :port] (get (:mapped-ports @db-state) 5432))
-                 (assoc-in [:mba-fiap.adapter.http.server/server :join?] false))
-        system (ig/init conf)]
-    (reset! system-state system)
+  (let [_system (system/system-start)]
     (try
       (f)
       (catch Exception e
-        (prn e)))
-    (ig/halt! system)
-    (reset! system-state ::not-initialized)))
-
+        (prn e))
+      (finally (system/system-stop)))))
 
 
 (use-fixtures :once (join-fixtures [postgre-fixture system-fixture]))
@@ -57,7 +34,8 @@
   (testing "main startup ok"
     (let [{:keys [body status]} (hc/get "http://localhost:8080/produtos/lanche")]
       (is (= 200 status))
-      (is (= "[]" body)))))
+      (is (= "[]"
+             body)))))
 
 
 (deftest cliente-crud
