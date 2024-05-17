@@ -1,4 +1,4 @@
-FROM clojure:temurin-17-alpine AS builder
+FROM clojure:latest AS builder
 ENV CLOJURE_VERSION=1.11.1.1182
 RUN mkdir -p /build
 WORKDIR /build
