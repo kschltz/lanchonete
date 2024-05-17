@@ -1,4 +1,4 @@
-FROM clojure:latest AS builder
+FROM clojure:temurin-22-tools-deps-bullseye-slim AS builder
 ENV CLOJURE_VERSION=1.11.1.1182
 RUN mkdir -p /build
 WORKDIR /build
@@ -6,6 +6,7 @@ COPY ./ /build/
 
 RUN clojure -T:build ci
 RUN clojure -M:test:cucumber -g ./test/mba_fiap/ ./test/resources/
+
 FROM eclipse-temurin:17-alpine AS runner
 RUN addgroup -S lanchonete && adduser -S lanchonete -G lanchonete
 RUN mkdir -p /service && chown -R lanchonete. /service
