@@ -1,5 +1,5 @@
 # Use the official NATS Docker image as the base
-FROM nats
+FROM nats:alpine
 RUN addgroup -S nonroot \
     && adduser -S nonroot -G nonroot
 
