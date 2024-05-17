@@ -1,6 +1,9 @@
 # Use the official NATS Docker image as the base
 FROM nats
+RUN addgroup -S nonroot \
+    && adduser -S nonroot -G nonroot
 
+USER nonroot
 # Expose the required ports for NATS and NATS Streaming
 EXPOSE 8222 4222
 
