@@ -26,6 +26,8 @@
                            djblue/portal                 {:mvn/version "0.48.0"}}}
   :run-m    {:main-opts ["-m" "mba-fiap.lanchonete" "prod"]}
   ;;clj -T:build test só rodar testes
+  ;;clj -T:build ci :bdd true ;; rodar cucumber
+
   :build    {:deps       {fundingcircle/jukebox         {:mvn/version "1.0.6"}
                           io.github.clojure/tools.build {:mvn/version "0.9.4"}}
              :ns-default build}
