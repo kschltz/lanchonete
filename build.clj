@@ -9,15 +9,21 @@
 (def main 'mba-fiap.lanchonete)
 (def class-dir "target/classes")
 
-(defn test "Run all the tests." [opts]
+(defn test
+  "Run all the tests."
+  [opts]
   (println "\nRunning tests...")
-  (let [basis (b/create-basis {:aliases [:test]})
+  (let [basis    (b/create-basis {:aliases [:test]})
         combined (t/combine-aliases basis [:test])
-        cmds (b/java-command
-               {:basis     basis
-                :java-opts (:jvm-opts combined)
-                :main      'clojure.main
-                :main-args ["-m" "cognitect.test-runner"]})
+        cmds     (b/java-command
+                   {:basis basis
+                    :java-opts (:jvm-opts combined)
+                    :main      'clojure.main
+                    :main-args ["-m"
+                                "cloverage.coverage"
+                                "--test-ns-path" "test"
+                                "--src-ns-path" "src"
+                                "--runner" "eftest"]})
         {:keys [exit]} (b/process cmds)]
     (when-not (zero? exit) (throw (ex-info "Tests failed" {}))))
   opts)
