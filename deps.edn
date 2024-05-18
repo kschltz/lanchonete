@@ -17,6 +17,7 @@
          org.clojure/data.json             {:mvn/version "2.4.0"}
          org.clojure/tools.logging         {:mvn/version "1.2.4"}
          medley/medley                     {:mvn/version "1.4.0"}
+         hato/hato             {:mvn/version "0.9.0"}
          clj-http/clj-http                 {:mvn/version "3.12.3"}}
 
  :aliases
