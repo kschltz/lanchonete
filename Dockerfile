@@ -5,7 +5,6 @@ WORKDIR /build
 COPY ./ /build/
 
 RUN clojure -T:build ci
-RUN clojure -M:test:cucumber -g ./test/mba_fiap/ ./test/resources/
 
 FROM eclipse-temurin:17-alpine AS runner
 RUN addgroup -S lanchonete && adduser -S lanchonete -G lanchonete
