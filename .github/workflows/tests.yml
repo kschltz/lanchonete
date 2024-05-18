@@ -1,6 +1,6 @@
 name: tests
 
-on: [push]
+on: [ push ]
 
 jobs:
 
@@ -8,7 +8,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ ubuntu-latest ]
 
     runs-on: ${{ matrix.os }}
 
@@ -55,6 +55,8 @@ jobs:
           # key: cljdeps-${{ hashFiles('build.boot') }}
           restore-keys: cljdeps-
 
+      - name: Execute BDD (cucumber)
+        run: clojure -M:test:cucumber -g ./test/mba_fiap/ ./test/resources/
+
       - name: Execute tests
         run: clojure -X:test
-
