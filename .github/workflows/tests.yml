@@ -55,6 +55,9 @@ jobs:
           # key: cljdeps-${{ hashFiles('build.boot') }}
           restore-keys: cljdeps-
 
+      - name: Execute tests
+        run: clojure -T:build ci
+
       - name: Execute BDD (cucumber)
         run: clojure -M:test:cucumber -g ./test/mba_fiap/ ./test/resources/
 
