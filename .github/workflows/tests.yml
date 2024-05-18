@@ -44,3 +44,9 @@ jobs:
 
       - name: Execute tests
         run: clojure -X:test
+
+      # (Optionally) When you don't need Testcontainers anymore, you could terminate sessions eagerly
+      - name: Terminate Testcontainers Cloud Client active sessions
+        uses: atomicjar/testcontainers-cloud-setup-action@v1
+        with:
+          action: terminate
