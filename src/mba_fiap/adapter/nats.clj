@@ -19,8 +19,11 @@
 (defrecord NATSClient [app-name connection dispatchers]
   Closeable
   (close [_]
-    (run! #(.closeDispatcher connection %) dispatchers)
-    (.close connection))
+    (try
+      (run! #(.closeDispatcher connection %) dispatchers)
+      (.close connection)
+      (catch Exception e
+        (println ::27 e))))
 
   INATSClient
   (subscribe [_this subject handler]
@@ -32,10 +35,29 @@
 
   (publish [_ subject msg]
     (let [reply-to (str app-name "." subject ".reply")]
-      (.publish connection
-                subject
-                reply-to
-                (.getBytes (str msg) StandardCharsets/UTF_8)))))
+      (try
+        (.publish connection
+                  subject
+                  reply-to
+                  (.getBytes (str msg) StandardCharsets/UTF_8))
+        (catch Exception e
+          (println ::44 "FAILED TO PUBLISH MESSAGE" e)
+          (throw e))))))
+
+(defrecord MemoryNats [store]
+  Closeable
+  (close [_]
+    (println "Closing MemoryNats")
+    (reset! store {}))
+  INATSClient
+  (subscribe [_ subject handler]
+    (let [dispatcher (reify MessageHandler
+                       (^void onMessage [_ ^Message msg]
+                         (handler msg)))]
+      (run! #(.onMessage dispatcher %) (get @store subject))))
+
+    (publish [_ subject msg]
+             (swap! store update subject conj msg)))
 
 (defn nats-client [{:keys [app-name url subjects-handlers]}]
   (let [connection (Nats/connect (-> (Options/builder)
@@ -52,6 +74,12 @@
         (recur (.getStatus connection))))
 
     (->NATSClient app-name connection dispatchers)))
+
+(defmethod ig/init-key ::memory-nats [_ _]
+  (->MemoryNats (atom {})))
+
+(defmethod ig/halt-key! ::memory-nats [_ memory-nats]
+  (.close memory-nats))
 
 (defmethod ig/init-key ::client [_ {:keys [url app-name subjects-handlers]}]
   (let [client (nats-client {:url               url

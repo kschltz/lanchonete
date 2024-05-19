@@ -25,16 +25,6 @@ Tabela responsavel por guardar dados do pedido, todo pedido feito é salvo nessa
         total: Valor total do pedido.
         created_at: Data e hora de criação do pedido.
 
-- **Pagamento**
-
-Tabela responsavel por persistir os pagamentos dos pedidos.
-
-        id: Identificador único do pagamento
-        id_pedido: Chave estrangeira que relaciona o pagamento ao pedido.
-        total: Valor total do pagamento.
-        created_at: Data e hora de criação do pagamento.
-        status: Status do pagamento (por exemplo, “aprovado”, “pendente”).
-
 - **Produto**
 
 Tabela responsavel por guardar dados de produtos.
