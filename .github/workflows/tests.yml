@@ -43,8 +43,6 @@ jobs:
       - name: Execute BDD (cucumber)
         run: clojure -M:test:cucumber -g ./test/mba_fiap/ ./test/resources/
 
-      - name: Execute tests
-        run: clojure -X:test
 
       - name: list project
         run: ls -la

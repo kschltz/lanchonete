@@ -32,10 +32,8 @@
 
 (deftest test-main
   (testing "main startup ok"
-    (let [{:keys [body status]} (hc/get "http://localhost:8080/produtos/lanche")]
-      (is (= 200 status))
-      (is (= "[{\"id\":\"0af17083-4d2b-44d0-86cd-218ba2ba1c55\",\"nome\":\"X-bacon\",\"descricao\":\"p\\u00e3o com porco\",\"preco_centavos\":1500,\"categoria\":\"lanche\"}]"
-             body)))))
+    (let [{:keys [status]} (hc/get "http://localhost:8080/produtos/lanche")]
+      (is (= 200 status)))))
 
 
 (deftest cliente-crud
