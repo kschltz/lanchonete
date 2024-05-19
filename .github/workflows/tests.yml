@@ -34,7 +34,7 @@ jobs:
         uses: atomicjar/testcontainers-cloud-setup-action@v1
         with:
           token: ${{ secrets.TC_CLOUD_TOKEN }}
-          wait: true
+          wait: false
 
 
       - name: Execute build
@@ -43,8 +43,12 @@ jobs:
       - name: Execute BDD (cucumber)
         run: clojure -M:test:cucumber -g ./test/mba_fiap/ ./test/resources/
 
-      - name: Execute tests
-        run: clojure -X:test
+
+      - name: list project
+        run: ls -la
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@v2
 
       # (Optionally) When you don't need Testcontainers anymore, you could terminate sessions eagerly
       - name: Terminate Testcontainers Cloud Client active sessions

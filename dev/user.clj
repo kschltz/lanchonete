@@ -1,12 +1,13 @@
 (ns user
   (:require
-   [clojure.data.json :as json]
-   [hato.client :as hc]
-   [integrant.core :as ig]
-   [integrant.repl :as r]
-   [integrant.repl.state]
-   [mba-fiap.lanchonete :as lanchonete]
-   [migratus.core :as migratus]))
+    [clojure.data.json :as json]
+    [hato.client :as hc]
+    [integrant.core :as ig]
+    [integrant.repl :as r]
+    [integrant.repl.state]
+    [mba-fiap.lanchonete :as lanchonete]
+    [migratus.core :as migratus])
+  (:import (org.testcontainers.shaded.org.bouncycastle.cms CMSCompressedDataStreamGenerator$CmsCompressedOutputStream)))
 
 (integrant.repl/set-prep! #(lanchonete/prep-config :dev))
 
@@ -40,7 +41,6 @@
   (.listar (repository :repository/cliente) {})
   (.listar (repository :repository/produto) {})
   (.listar (repository :repository/pedido) {})
-  (.listar (repository :repository/pagamento) {})
 
   (.criar (repository :repository/pedido)
           {:id-cliente #uuid "236d3142-e4a7-4c23-976c-34454d8db1fc",
@@ -64,12 +64,7 @@
           {:nome "novo-produto"
            :descricao "descricao"
            :categoria :lanche
-           :preco-centavos 400})
-
-  (.criar (repository :repository/pagamento)
-          {:id-pedido #uuid"f1429128-0418-4a87-b19a-b5454b167727"
-           :total 12345
-           :status "em processamento"}))
+           :preco-centavos 400}))
 
 (defn add-migration
   [migration-name]
@@ -152,13 +147,7 @@
             :headers {"content-type" "application/json"}
             :body (json/write-str body)}))
 
-(defn post-confirmacao-pagamento
-  [id-pgmto & [host]]
-  (hc/post
-   (url host (str "/confirmacao-pagamento/" id-pgmto))
-   {:throw-exceptions? false
-    :headers {"content-type" "application/json"}
-    :body (json/write-str {:status "pago"})}))
+
 
 (defn ->body
   [response]
@@ -167,10 +156,7 @@
   (-> response :body (json/read-str :key-fn keyword)))
 
 (defn pedido-cycle [& [host]]
-  (let [
-        ;_
-        #_(next.jdbc/execute! (db) [(str "TRUNCATE TABLE pedido CASCADE;"
-                                       "TRUNCATE TABLE pagamento CASCADE;"
+  (let [_(next.jdbc/execute! (db) [(str "TRUNCATE TABLE pedido CASCADE;"
                                        "TRUNCATE TABLE produto CASCADE;"
                                        "TRUNCATE TABLE cliente CASCADE;")])
         cliente (->body (post-client host))
@@ -202,6 +188,18 @@
            :pedido pedido} tap>)))
 
 (comment
+
+  (go [:mba-fiap.datasource.postgres/db
+       :mba-fiap.adapter.nats/client])
+  (halt)
+  (.subscribe (nats) "lanchonete.*" println)
+  (.subscribe (nats) "pagamento.*" (fn [msg]
+                                     (println "MSG" (bean msg))
+                                     (println "Payload" (String. (.getData msg)))))
+
+
+  (hato.client/get "http://localhost:8080/produtos/lanche"
+                   {:throw-exceptions false})
   (post-client "0.0.0.0")
   (get-pedidos)
   (pedido-cycle))

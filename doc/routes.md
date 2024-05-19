@@ -5,8 +5,6 @@
 1. Cadastrar um cliente na API de cliente (Opcional)
 2. Cadastrar pelo menos 1 produto na [API de Produto](#produto)
 3. Criar um pedido na [API de pedidos](#pedido) (de preferência, utilize o ID do cliente e do produto criado anteriormente).
-4. Cadastrar pagamento feito na API de [pagamento](#pagamento)
-5. Atualizar o status de pagamento de um pedido na API de [pagamento](#pagamento)
 
 **Ps. Caso rode a aplicação via minikube, é necessário usar o external IP do minikube como host**
 
@@ -95,36 +93,6 @@ curl --location PUT 'http://localhost:8080/pedido/{{pedido_id}}'
     "total": 19000,
     "status": "aguardando pagamento"
 }'
-```
-
-## Pagamento
-
-#### Atualizar Status de Pagamentos pelo id do pedido
-
-```cURL
-curl --location --request PUT 'localhost:8080/pagamento/{{pedido_id}}'
---header 'Content-Type: application/json'
---data '{
-    "status": "pago"
-}'
-```
-
-#### Criar um pagamento
-
-```cURL
-curl --location 'http://localhost:8080/pagamento' \
---header 'Content-Type: application/json' \
---data '{
-    "id-pedido": "{{pedido_id}}",
-    "status": "pago",
-    "total": 4999
-}'
-```
-
-#### Buscar pagamentos pelo id do pedido
-
-```cURL
-curl --location 'localhost:8080/pagamento/d7ce1a59-71da-494b-a115-454b1b970c4a'
 ```
 
 #### Autenticar um usuário

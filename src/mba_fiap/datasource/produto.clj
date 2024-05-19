@@ -45,8 +45,8 @@
     (jdbc/execute!
       connection
       (hs/format {:update :produto
-                  :set data
-                  :where [:= :id (:id data)]})
+                  :set    (dissoc data :nome)
+                  :where  [:= :id (:id data)]})
       {:return-keys true}))
 
 

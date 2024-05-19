@@ -11,6 +11,7 @@
 
 (defn context-interceptor
   [context]
+  (tap> context)
   (interceptor/on-request #(assoc % :app-context context)))
 
 (defn tap-interceptor
@@ -59,7 +60,7 @@
       :then http/create-server)))
 
 (defmethod ig/init-key ::server [_ cfg]
-  (http/start (server cfg)))
+  (doto (http/start (server cfg)) println))
 
 (defmethod ig/halt-key! ::server [_ server]
   (http/stop server))

@@ -33,9 +33,6 @@
  {:repository-name :pedido
   :connection      #ig/ref :mba-fiap.datasource.postgres/db}
 
- [:mba-fiap.repository.repository/repository :repository/pagamento]
- {:repository-name :pagamento
-  :connection      #ig/ref :mba-fiap.datasource.postgres/db}
 
  :mba-fiap.service.auth/auth
  {:url #or [#env LAMBDA_URL "http://localhost"]}
@@ -49,8 +46,11 @@
   :app-name          "lanchonete"
   :subjects-handlers {"lanchonete.*" #ig/ref :simple/printer}}
 
+ :mba-fiap.adapter.nats/memory-nats {}
+
  :mba-fiap.service.pedido/checkout
- {:nats #ig/ref :mba-fiap.adapter.nats/client}
+ {:nats #ig/ref :mba-fiap.adapter.nats/client
+  :subject #or [#env PAGAMENTO_NOVO_PEDIDO_SUBJECT "pagamento.novo-pedido"]}
 
 
  :mba-fiap.adapter.http.server/server
@@ -62,11 +62,11 @@
                          :test    false
                          :dev     false}
 
-  :app-context {:nats                 #ig/ref :mba-fiap.adapter.nats/client
+  :app-context {:nats                 #profile {:test #ig/ref :mba-fiap.adapter.nats/memory-nats
+                                                :default #ig/ref :mba-fiap.adapter.nats/client}
                 :migrations           #ig/ref :mba-fiap.datasource.migratus/migratus
                 :usecase/checkout     #ig/ref :mba-fiap.service.pedido/checkout
                 :repository/cliente   #ig/ref :repository/cliente
                 :repository/produto   #ig/ref :repository/produto
                 :repository/pedido    #ig/ref :repository/pedido
-                :repository/pagamento #ig/ref :repository/pagamento
                 :auth                 #ig/ref :mba-fiap.service.auth/auth}}}
