@@ -40,6 +40,19 @@
  :mba-fiap.service.auth/auth
  {:url #or [#env LAMBDA_URL "http://localhost"]}
 
+ [:mba-fiap.adapter.nats/simple-handler :simple/printer]
+ {:ctx        {}
+  :handler-fn clojure.core/println}
+
+ :mba-fiap.adapter.nats/client
+ {:url               #or [#env NATS_URL "nats://66.51.121.86:4222"]
+  :app-name          "lanchonete"
+  :subjects-handlers {"lanchonete.*" #ig/ref :simple/printer}}
+
+ :mba-fiap.service.pedido/checkout
+ {:nats #ig/ref :mba-fiap.adapter.nats/client}
+
+
  :mba-fiap.adapter.http.server/server
  {:env         #profile {:default :dev
                          :test    :test
@@ -49,7 +62,9 @@
                          :test    false
                          :dev     false}
 
-  :app-context {:migrations           #ig/ref :mba-fiap.datasource.migratus/migratus
+  :app-context {:nats                 #ig/ref :mba-fiap.adapter.nats/client
+                :migrations           #ig/ref :mba-fiap.datasource.migratus/migratus
+                :usecase/checkout     #ig/ref :mba-fiap.service.pedido/checkout
                 :repository/cliente   #ig/ref :repository/cliente
                 :repository/produto   #ig/ref :repository/produto
                 :repository/pedido    #ig/ref :repository/pedido

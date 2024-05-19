@@ -1,5 +1,6 @@
 (ns mba-fiap.service.pedido
   (:require
+    [integrant.core :as ig]
     [mba-fiap.base.validation :as validation]
     [mba-fiap.model.pedido :as pedido])
   (:import
@@ -37,6 +38,9 @@
      :status status
      :total total}))
 
+(defmethod ig/init-key ::checkout [_ {:keys [nats repository]}]
+  (fn [r data]
+    (.publish nats "pagamento.novo-pedido" (checkout (or r repository) data))))
 
 (defn listar-pedidos
   ([^Repository repository]

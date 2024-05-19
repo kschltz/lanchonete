@@ -1,23 +1,24 @@
 (ns mba-fiap.adapter.pedido-rest
   (:require
-   [io.pedestal.http.body-params :as body-params]
-   [io.pedestal.http.ring-middlewares :as middlewares]
-   [mba-fiap.service.pedido :as pedido.service]
-   [mba-fiap.service.produto :as produto.service]
-   [mba-fiap.usecase.pedido :as usecase.p]
-   [medley.core :as medley]))
+    [io.pedestal.http.body-params :as body-params]
+    [io.pedestal.http.ring-middlewares :as middlewares]
+    [mba-fiap.service.pedido :as pedido.service]
+    [mba-fiap.service.produto :as produto.service]
+    [mba-fiap.usecase.pedido :as usecase.p]
+    [medley.core :as medley]))
 
 (defn cadastrar-pedido
   [request]
   (try (let [repository-pedido (get-in request [:app-context :repository/pedido])
              repository-produto (get-in request [:app-context :repository/produto])
-             data       (:json-params request)
+             checkout (get-in request [:app-context :usecase/checkout])
+             data (:json-params request)
              parsed-data (-> data
                              (update :id-cliente parse-uuid)
                              (update :produtos #(mapv parse-uuid %)))
-             produtos   (produto.service/listar-por-ids repository-produto (:produtos parsed-data))
+             produtos (produto.service/listar-por-ids repository-produto (:produtos parsed-data))
              to-create (usecase.p/criar-pedido produtos parsed-data)
-             result     (pedido.service/checkout repository-pedido to-create)]
+             result (checkout repository-pedido to-create)]
          {:status  200
           :headers {"Content-Type" "application/json"}
           :body    result})
@@ -30,9 +31,9 @@
   [request]
   (let [repository (get-in request [:app-context :repository/pedido])
         result (pedido.service/listar-pedidos repository (usecase.p/listar-pedidos-abertos))]
-    {:status 200
+    {:status  200
      :headers {"Content-Type" "application/json"}
-     :body result}))
+     :body    result}))
 
 (defn editar-pedido
   [request]
@@ -45,9 +46,9 @@
                         (medley/update-existing :id-cliente parse-uuid)
                         (medley/update-existing :produtos #(mapv parse-uuid %)))
         result (pedido.service/editar-pedido repository parsed-data)]
-    {:status 200
+    {:status  200
      :headers {"Content-Type" "application/json"}
-     :body result}))
+     :body    result}))
 
 (defn pedido-routes
   []

@@ -1,5 +1,6 @@
 (ns mba-fiap.adapter.nats
-  (:require [clojure.tools.logging :as log])
+  (:require [clojure.tools.logging :as log]
+            [integrant.core :as ig])
   (:import (io.nats.client Connection$Status Message MessageHandler Nats Options)
            (java.io Closeable)
            (java.nio.charset StandardCharsets)))
@@ -7,7 +8,13 @@
 
 
 (defprotocol INATSClient
+  (subscribe [this subject handler])
   (publish [_ subject msg]))
+
+(defn ->dispatcher [f]
+  (reify MessageHandler
+    (^void onMessage [_ ^Message msg]
+      (f msg))))
 
 (defrecord NATSClient [app-name connection dispatchers]
   Closeable
@@ -16,21 +23,24 @@
     (.close connection))
 
   INATSClient
+  (subscribe [_this subject handler]
+    (let [dispatcher (reify MessageHandler
+                       (^void onMessage [_ ^Message msg]
+                         (handler msg)))]
+      (-> (.createDispatcher connection dispatcher)
+          (.subscribe subject))))
+
   (publish [_ subject msg]
-    (let [subject (str app-name "." subject)
-          reply-to (str subject ".reply")]
+    (let [reply-to (str app-name "." subject ".reply")]
       (.publish connection
                 subject
                 reply-to
-                (.getBytes msg StandardCharsets/UTF_8)))))
+                (.getBytes (str msg) StandardCharsets/UTF_8)))))
 
 (defn nats-client [{:keys [app-name url subjects-handlers]}]
   (let [connection (Nats/connect (-> (Options/builder)
                                      (.server url)
                                      (.build)))
-        ->dispatcher (fn [f] (reify MessageHandler
-                               (^void onMessage [_ ^Message msg]
-                                 (f msg))))
         dispatchers (->> subjects-handlers
                          (mapv (fn [[subject handler]]
                                  (doto (.createDispatcher connection (->dispatcher handler))
@@ -43,6 +53,19 @@
 
     (->NATSClient app-name connection dispatchers)))
 
+(defmethod ig/init-key ::client [_ {:keys [url app-name subjects-handlers]}]
+  (let [client (nats-client {:url               url
+                             :app-name          app-name
+                             :subjects-handlers subjects-handlers})]
+    client))
+
+(defmethod ig/halt-key! ::client [_ client]
+  (.close client))
+
+(defmethod ig/init-key ::simple-handler [_ {:keys [ctx handler-fn]}]
+  (partial (eval handler-fn) ctx))
+
+
 (comment
 
   (def control (atom true))
@@ -52,8 +75,8 @@
                         :subjects-handlers {"lanchonete.*" #(prn "1" (.getSubject %) " " (String. (.getData %)))}
                         }))
   (def c2 (nats-client {:url               "nats://66.51.121.86:4222"
-                        :app-name          "lanchonete"
-                        :subjects-handlers {"lanchonete.*" #(prn "2" (.getSubject %) " " (String. (.getData %)))}
+                        :app-name          "pagamento"
+                        :subjects-handlers {"pagamento.*" #(prn "2" (.getSubject %) " " (String. (.getData %)))}
                         }))
 
   (future (with-open [c (nats-client {:url               "nats://66.51.121.86:4222"

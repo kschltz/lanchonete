@@ -1,1 +1,2 @@
-DROP CONSTRAINT IF EXISTS products_name_unique;
+ALTER TABLE produto
+DROP CONSTRAINT products_name_unique;

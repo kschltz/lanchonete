@@ -26,6 +26,9 @@
   []
   (:mba-fiap.datasource.postgres/db integrant.repl.state/system))
 
+(defn nats []
+  (:mba-fiap.adapter.nats/client integrant.repl.state/system))
+
 (defn repository
   [repository-key]
   (->> (ig/find-derived integrant.repl.state/system :mba-fiap.repository.repository/repository)
@@ -164,29 +167,31 @@
   (-> response :body (json/read-str :key-fn keyword)))
 
 (defn pedido-cycle [& [host]]
-  (let [_ (next.jdbc/execute! (db) [(str "TRUNCATE TABLE pedido CASCADE;"
-                                         "TRUNCATE TABLE pagamento CASCADE;"
-                                         "TRUNCATE TABLE produto CASCADE;"
-                                         "TRUNCATE TABLE cliente CASCADE;")])
+  (let [
+        ;_
+        #_(next.jdbc/execute! (db) [(str "TRUNCATE TABLE pedido CASCADE;"
+                                       "TRUNCATE TABLE pagamento CASCADE;"
+                                       "TRUNCATE TABLE produto CASCADE;"
+                                       "TRUNCATE TABLE cliente CASCADE;")])
         cliente (->body (post-client host))
-        bebida (->body (post-produto host {:nome "Guaraná Jesus"
-                                           :descricao "coca rosa"
-                                           :categoria :bebida
+        bebida (->body (post-produto host {:nome           "Guaraná Jesus"
+                                           :descricao      "coca rosa"
+                                           :categoria      :bebida
                                            :preco-centavos 700}))
-        acompanhamento (->body (post-produto host {:nome "Batatas oleosas"
-                                                   :descricao "infarto potato"
-                                                   :categoria :acompanhamento
+        acompanhamento (->body (post-produto host {:nome           "Batatas oleosas"
+                                                   :descricao      "infarto potato"
+                                                   :categoria      :acompanhamento
                                                    :preco-centavos 1500}))
-        lanche (->body (post-produto host {:nome "X-BEIKO"
-                                           :descricao "pancoporco"
-                                           :categoria :lanche
+        lanche (->body (post-produto host {:nome           "X-BEIKO"
+                                           :descricao      "pancoporco"
+                                           :categoria      :lanche
                                            :preco-centavos 3000}))
 
         pedido (->body (hc/post (url host "/pedido")
-                                (doto {:body (json/write-str {:produtos (mapv :id [bebida acompanhamento lanche])
-                                                              :id-cliente (:id cliente)
-                                                              :numero-do-pedido "1"
-                                                              :total 5200})
+                                (doto {:body         (json/write-str {:produtos         (mapv :id [bebida acompanhamento lanche])
+                                                                      :id-cliente       (:id cliente)
+                                                                      :numero-do-pedido "1"
+                                                                      :total            5200})
                                        :content-type :json}
                                   tap>)))]
 
@@ -196,4 +201,7 @@
            :lanche lanche
            :pedido pedido} tap>)))
 
-(comment (pedido-cycle))
+(comment
+  (post-client "0.0.0.0")
+  (get-pedidos)
+  (pedido-cycle))

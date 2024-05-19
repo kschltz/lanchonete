@@ -8,6 +8,7 @@
    [mba-fiap.datasource.cliente]
    [mba-fiap.datasource.produto]
    [mba-fiap.repository.repository]
+   [mba-fiap.service.pedido]
    [mba-fiap.datasource.pedido]))
 
 (def ^:const system-filename "config.edn")
