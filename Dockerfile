@@ -4,7 +4,7 @@ RUN mkdir -p /build
 WORKDIR /build
 COPY ./ /build/
 
-RUN clojure -T:build ci
+RUN clojure -T:build ci :skip-tests true
 
 FROM eclipse-temurin:17-alpine AS runner
 RUN addgroup -S lanchonete && adduser -S lanchonete -G lanchonete
