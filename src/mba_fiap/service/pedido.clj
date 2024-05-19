@@ -38,9 +38,11 @@
      :status status
      :total total}))
 
-(defmethod ig/init-key ::checkout [_ {:keys [nats repository]}]
+(defmethod ig/init-key ::checkout [_ {:keys [nats repository subject]}]
   (fn [r data]
-    (.publish nats "pagamento.novo-pedido" (checkout (or r repository) data))))
+    (let [created (checkout (or r repository) data)]
+      (.publish nats subject created)
+      created)))
 
 (defn listar-pedidos
   ([^Repository repository]
