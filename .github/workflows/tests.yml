@@ -46,6 +46,9 @@ jobs:
       - name: Execute tests
         run: clojure -X:test
 
+      - name: list project
+        run: ls -la
+
       - name: Coveralls
         uses: coverallsapp/github-action@v2
 
