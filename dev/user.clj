@@ -156,7 +156,7 @@
   (-> response :body (json/read-str :key-fn keyword)))
 
 (defn pedido-cycle [& [host]]
-  (let [#_(next.jdbc/execute! (db) [(str "TRUNCATE TABLE pedido CASCADE;"
+  (let [_ (next.jdbc/execute! (db) [(str "TRUNCATE TABLE pedido CASCADE;"
                                          "TRUNCATE TABLE produto CASCADE;"
                                          "TRUNCATE TABLE cliente CASCADE;")])
         cliente (->body (post-client host))
@@ -189,7 +189,8 @@
 
 (comment
 
-  (go [:mba-fiap.adapter.nats/client])
+  (go [:mba-fiap.adapter.nats/client
+       :mba-fiap.datasource.postgres/db])
   (halt)
   (.subscribe (nats) "lanchonete.*" println)
   (.subscribe (nats) "pagamento.*" (fn [msg]
@@ -206,4 +207,4 @@
                     :throw-exceptions false})
   (post-client " 0.0.0.0 ")
   (get-pedidos)
-  (pedido-cycle " lanchonete-alb-371459278.us-east-1.elb.amazonaws.com "))
+  (pedido-cycle))
