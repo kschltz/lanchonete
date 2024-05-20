@@ -43,27 +43,27 @@
   (.listar (repository :repository/pedido) {})
 
   (.criar (repository :repository/pedido)
-          {:id-cliente #uuid "236d3142-e4a7-4c23-976c-34454d8db1fc",
+          {:id-cliente       #uuid "236d3142-e4a7-4c23-976c-34454d8db1fc",
            :produtos
            [#uuid "f11c6b18-89fb-461a-9d76-9c59d9262f23"
             #uuid "4e5ce39e-e30e-48e9-a763-f2a2f2fdcd68"
             #uuid "b800c75e-18af-4d31-a7f1-6f5b3a457903"],
            :numero-do-pedido "2",
-           :total 2000,
-           :status "aguardando pagamento"})
+           :total            2000,
+           :status           "aguardando pagamento"})
 
   (.atualizar (repository :repository/pedido)
-              {:id #uuid"fbb98663-77ab-4560-a065-6b9b833c190f"
-               :id-cliente #uuid "336d3142-e4a7-4c23-976c-34454d8db1fc",
-               :produtos [#uuid "f11c6b18-89fb-461a-9d76-9c59d9262f23"]
+              {:id               #uuid"fbb98663-77ab-4560-a065-6b9b833c190f"
+               :id-cliente       #uuid "336d3142-e4a7-4c23-976c-34454d8db1fc",
+               :produtos         [#uuid "f11c6b18-89fb-461a-9d76-9c59d9262f23"]
                :numero-do-pedido "5",
-               :total 2000,
-               :status "aguardando pagamento"})
+               :total            2000,
+               :status           "aguardando pagamento"})
 
   (.criar (repository :repository/produto)
-          {:nome "novo-produto"
-           :descricao "descricao"
-           :categoria :lanche
+          {:nome           "novo-produto"
+           :descricao      "descricao"
+           :categoria      :lanche
            :preco-centavos 400}))
 
 (defn add-migration
@@ -77,8 +77,8 @@
   [& [host body]]
   (hc/post (url host "/cliente")
            {:throw-exceptions? false
-            :headers {"content-type" "application/json"}
-            :body (json/write-str (or body {"cpf" "04373360189"}))}))
+            :headers           {"content-type" "application/json"}
+            :body              (json/write-str (or body {"cpf" "04373360189"}))}))
 
 (defn get-cliente
   [cpf & [host]]
@@ -87,21 +87,21 @@
 (defn get-produtos
   [categoria]
   (-> (hc/get
-       (str "http://localhost:8080/produtos/" categoria)
-       {:throw-exceptions? false
-        :headers {"Content-Type" "application/json"}})
+        (str "http://localhost:8080/produtos/" categoria)
+        {:throw-exceptions? false
+         :headers           {"Content-Type" "application/json"}})
       (doto tap>)))
 
 (defn post-produto
   [& [host body]]
   (hc/post (url host "/produto")
            {:throw-exceptions? false
-            :headers {"content-type" "application/json"}
-            :body (json/write-str (or body
-                                      {:nome "Sandubinha do bem"
-                                       :descricao "Sandubinha do bem"
-                                       :categoria "lanche"
-                                       :preco-centavos 4400}))}))
+            :headers           {"content-type" "application/json"}
+            :body              (json/write-str (or body
+                                                   {:nome           "Sandubinha do bem"
+                                                    :descricao      "Sandubinha do bem"
+                                                    :categoria      "lanche"
+                                                    :preco-centavos 4400}))}))
 
 (defn deletar-produto
   [id]
@@ -111,11 +111,11 @@
   [id]
   (hc/put (str "http://localhost:8080/produto/" id)
           {:throw-exceptions? false
-           :headers {"content-type" "application/json"}
-           :body (json/write-str {:nome "Novo sanduba editado"
-                                  :descricao "Novo sanduba editado"
-                                  :categoria "lanche"
-                                  :preco-centavos 4750})}))
+           :headers           {"content-type" "application/json"}
+           :body              (json/write-str {:nome           "Novo sanduba editado"
+                                               :descricao      "Novo sanduba editado"
+                                               :categoria      "lanche"
+                                               :preco-centavos 4750})}))
 
 (defn portal
   []
@@ -126,15 +126,15 @@
 
 (defn stress-cluster [external-ip n-req]
   (time
-   (apply
-    pcalls
-    (repeat n-req
-            #(do
-               (let [start (System/currentTimeMillis)
-                     res (hato.client/get (str "http://" external-ip ":8080/produtos/lanche"))
-                     end (System/currentTimeMillis)]
-                 {:response res
-                  :duration (- end start)}))))))
+    (apply
+      pcalls
+      (repeat n-req
+              #(do
+                 (let [start (System/currentTimeMillis)
+                       res (hato.client/get (str "http://" external-ip ":8080/produtos/lanche"))
+                       end (System/currentTimeMillis)]
+                   {:response res
+                    :duration (- end start)}))))))
 
 (defn get-pedidos
   [& [host]]
@@ -144,8 +144,8 @@
   [& [host body]]
   (hc/post (url host "/pedido")
            {:throw-exceptions? false
-            :headers {"content-type" "application/json"}
-            :body (json/write-str body)}))
+            :headers           {"content-type" "application/json"}
+            :body              (json/write-str body)}))
 
 
 
@@ -156,9 +156,9 @@
   (-> response :body (json/read-str :key-fn keyword)))
 
 (defn pedido-cycle [& [host]]
-  (let [_(next.jdbc/execute! (db) [(str "TRUNCATE TABLE pedido CASCADE;"
-                                       "TRUNCATE TABLE produto CASCADE;"
-                                       "TRUNCATE TABLE cliente CASCADE;")])
+  (let [#_(next.jdbc/execute! (db) [(str "TRUNCATE TABLE pedido CASCADE;"
+                                         "TRUNCATE TABLE produto CASCADE;"
+                                         "TRUNCATE TABLE cliente CASCADE;")])
         cliente (->body (post-client host))
         bebida (->body (post-produto host {:nome           "Guaraná Jesus"
                                            :descricao      "coca rosa"
@@ -181,16 +181,15 @@
                                        :content-type :json}
                                   tap>)))]
 
-    (doto {:cliente cliente
-           :bebida bebida
+    (doto {:cliente        cliente
+           :bebida         bebida
            :acompanhamento acompanhamento
-           :lanche lanche
-           :pedido pedido} tap>)))
+           :lanche         lanche
+           :pedido         pedido} tap>)))
 
 (comment
 
-  (go [:mba-fiap.datasource.postgres/db
-       :mba-fiap.adapter.nats/client])
+  (go [:mba-fiap.adapter.nats/client])
   (halt)
   (.subscribe (nats) "lanchonete.*" println)
   (.subscribe (nats) "pagamento.*" (fn [msg]
@@ -198,8 +197,13 @@
                                      (println "Payload" (String. (.getData msg)))))
 
 
-  (hato.client/get "http://localhost:8080/produtos/lanche"
-                   {:throw-exceptions false})
-  (post-client "0.0.0.0")
+  (hato.client/get "http://lanchonete-alb-371459278.us-east-1.elb.amazonaws.com:8080/produtos/bebida"
+                   {:headers
+                    {"accept"                    "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+                     "accept-language"           "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7",
+                     "cache-control"             "max-age=0",
+                     "upgrade-insecure-requests" "1"},
+                    :throw-exceptions false})
+  (post-client " 0.0.0.0 ")
   (get-pedidos)
-  (pedido-cycle))
+  (pedido-cycle " lanchonete-alb-371459278.us-east-1.elb.amazonaws.com "))

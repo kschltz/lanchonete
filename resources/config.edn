@@ -50,8 +50,14 @@
 
  :mba-fiap.service.pedido/checkout
  {:nats #ig/ref :mba-fiap.adapter.nats/client
-  :subject #or [#env PAGAMENTO_NOVO_PEDIDO_SUBJECT "pagamento.novo-pedido"]}
+  :pagamento-status #or [#env PAGAMENTO_STATUS "pagamento.status"]
+  :pedido-novo-preparo  #or [#env PEDIDO_NOVO_PREPARO "pedido.novo-preparo"]
+  :subject #or [#env PAGAMENTO_NOVO_PEDIDO "pagamento.novo-pedido"]}
 
+ :mba-fiap.service.pedido/atualizar-status
+ {:nats #ig/ref :mba-fiap.adapter.nats/client
+  :repository/pedido    #ig/ref :repository/pedido
+  :pagamento-status #or [#env PAGAMENTO_STATUS "pagamento.status"]}
 
  :mba-fiap.adapter.http.server/server
  {:env         #profile {:default :dev

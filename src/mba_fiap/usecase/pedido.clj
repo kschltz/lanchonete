@@ -1,6 +1,7 @@
 (ns mba-fiap.usecase.pedido
   (:require
-   [mba-fiap.model.pedido :as m.pedido]))
+   [mba-fiap.model.pedido :as m.pedido]
+   [mba-fiap.model.pagamento :as m.pagamento]))
 
 (defn listar-pedidos-abertos
   []
@@ -31,3 +32,8 @@
      :numero-do-pedido (:numero-do-pedido pedido-data)
      :total total
      :status m.pedido/recebido}))
+
+(defn aguardar-pagamento [pagamento]
+  (if (= (:status pagamento) m.pagamento/pago)
+    {:id (:id-pedido pagamento)
+     :status m.pedido/em-preparo}))

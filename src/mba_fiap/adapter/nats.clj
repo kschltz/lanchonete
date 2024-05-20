@@ -48,13 +48,21 @@
   Closeable
   (close [_]
     (println "Closing MemoryNats")
-    (reset! store {}))
+    (reset! store nil))
   INATSClient
   (subscribe [_ subject handler]
     (let [dispatcher (reify MessageHandler
                        (^void onMessage [_ ^Message msg]
+                         (println "MemoryNats received message" msg)
                          (handler msg)))]
-      (run! #(.onMessage dispatcher %) (get @store subject))))
+      (loop [s @store]
+        (if-not s
+          :stopped
+          (do
+            (when (seq (get @store subject))
+              (run! #(.onMessage dispatcher %) (get @store subject))
+              (swap! store assoc subject [])
+              (recur @store)))))))
 
     (publish [_ subject msg]
              (swap! store update subject conj msg)))
