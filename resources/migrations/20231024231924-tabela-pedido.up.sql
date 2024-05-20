@@ -1,6 +1,6 @@
 create extension if not exists "uuid-ossp";
 --;;
-create table pedido
+create table if not exists pedido
 (
     id               uuid primary key default uuid_generate_v4(),
     id_cliente       uuid    NOT NULL references cliente(id),
