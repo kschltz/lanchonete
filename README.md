@@ -46,7 +46,7 @@ It will:
 - 1 - Delete the current minikube
 - 2 - Create a new minikube
 - 3 - build the app image
-- 4 - loag de image
+- 4 - load de image
 - 5 - apply the k8s files
 - 7 - enable the metrics addon
 - 8 - open up minikube tunnel for connectivity

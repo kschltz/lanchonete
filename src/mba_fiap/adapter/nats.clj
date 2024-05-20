@@ -36,6 +36,7 @@
   (publish [_ subject msg]
     (let [reply-to (str app-name "." subject ".reply")]
       (try
+        (log/info ::34 "PUBLISHING MESSAGE" msg)
         (.publish connection
                   subject
                   reply-to

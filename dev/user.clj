@@ -192,19 +192,32 @@
   (go [:mba-fiap.adapter.nats/client
        :mba-fiap.datasource.postgres/db])
   (halt)
-  (.subscribe (nats) "lanchonete.*" println)
+  (.subscribe (nats) "lanchonete.*" (fn [msg]
+                                      (println "MSG" (bean msg))
+                                      (println "Payload" (String. (.getData msg)))))
+  (.subscribe (nats) "pedido.*" (fn [msg]
+                                     (println "MSG" (bean msg))
+                                     (println "Payload" (String. (.getData msg)))))
   (.subscribe (nats) "pagamento.*" (fn [msg]
                                      (println "MSG" (bean msg))
                                      (println "Payload" (String. (.getData msg)))))
 
 
-  (hato.client/get "http://lanchonete-alb-371459278.us-east-1.elb.amazonaws.com:8080/produtos/bebida"
-                   {:headers
-                    {"accept"                    "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-                     "accept-language"           "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7",
-                     "cache-control"             "max-age=0",
-                     "upgrade-insecure-requests" "1"},
+  (hato.client/request
+                   {:request-method :GET
+                    :url "http://lanchonete-alb-192042364.us-east-1.elb.amazonaws.com:8080/produtos/lanche"
+                    :headers {"accept" "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+                              "accept-language" "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7",
+                              "cache-control" "max-age=0",
+                              "upgrade-insecure-requests" "1"}
+                    :referrerPolicy "strict-origin-when-cross-origin"
+                    :body nil
+                    :method :GET
                     :throw-exceptions false})
   (post-client " 0.0.0.0 ")
   (get-pedidos)
-  (pedido-cycle))
+  (pedido-cycle)
+
+
+
+  )
