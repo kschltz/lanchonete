@@ -79,6 +79,5 @@
   (.subscribe nats
               pagamento-status
               (fn [msg]
-                (let [data]
-                  (->> (edn/read-string (.getData msg))
-                       (editar-pedido repository))))))
+                (->> (edn/read-string (.getData msg))
+                     (editar-pedido repository)))))
