@@ -75,7 +75,12 @@
       created)))
 
 
-(defmethod ig/init-key ::atualizar-status [_ {:keys [nats repository pagamento-status]}]
+(defmethod ig/init-key ::atualizar-status [_ {:keys [nats repository pagamento-status pedido-status]}]
+  (.subscribe nats
+              pedido-status
+              (fn [msg]
+                (->> (edn/read-string (String. (.getData msg)))
+                     (editar-pedido repository))))
   (.subscribe nats
               pagamento-status
               (fn [msg]
