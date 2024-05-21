@@ -66,12 +66,12 @@
 (defmethod ig/init-key ::checkout [_ {:keys [nats repository subject pagamento-status pedido-novo-preparo]}]
   (fn [r data]
     (.subscribe nats pagamento-status (fn [msg]
-                                        (let [data (edn/read-string (.getData msg))
+                                        (let [data (edn/read-string (String. (.getData msg)))
                                               paid (pedido.use-case/aguardar-pagamento data)]
                                           (when paid (let [updated (editar-pedido (or r repository) paid)]
                                                        (.publish nats pedido-novo-preparo updated))))))
     (let [created (checkout (or r repository) data)]
-      (.publish nats subject created)
+      (.publish nats subject (str created))
       created)))
 
 

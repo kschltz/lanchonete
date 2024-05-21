@@ -171,6 +171,7 @@
   (testing "listar-pedidos"
     (let [response (hc/get "http://localhost:8080/pedidos"
                            {:throw-exceptions false})
+          _ (println response)
           body (json/read-str (:body response) :key-fn keyword)]
       (is (= 200 (:status response)))
       (is (= 1 (count body)))))
