@@ -57,6 +57,7 @@
  :mba-fiap.service.pedido/atualizar-status
  {:nats #ig/ref :mba-fiap.adapter.nats/client
   :repository/pedido    #ig/ref :repository/pedido
+  :pedido-status #or [#env PAGAMENTO_STATUS "pedido.status"]
   :pagamento-status #or [#env PAGAMENTO_STATUS "pagamento.status"]}
 
  :mba-fiap.adapter.http.server/server
