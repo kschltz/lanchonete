@@ -51,7 +51,7 @@
   (try 
     (let [repository (get-in request [:app-context :repository/cliente])
           {:keys [cpf]} (:path-params request)
-          result (usecase.cliente/excluir-cliente repository cpf)]
+          result (usecase.cliente/excluir-por-cpf repository cpf)]
       
        (case (:status result) 
          :success

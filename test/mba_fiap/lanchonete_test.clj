@@ -88,7 +88,15 @@
                                                                                      :password "password"})})
               body (json/read-str body :key-fn keyword)]
           (is (= 400 (:status result)))
-          (is (= {:error "The client does not exists in our system"} body)))))))
+          (is (= {:error "The client does not exists in our system"} body)))))
+
+    (testing "Delete client"
+      (let [delete-response (hc/delete (str "http://localhost:8080/cliente/" (:cpf by-cpf))
+                                       {:throw-exceptions false})
+            get-response (hc/get (str "http://localhost:8080/cliente/" (:cpf by-cpf))
+                                 {:throw-exceptions false})]
+        (is (= 200 (:status delete-response)))
+        (is (= 404 (:status get-response)))))))
 
 (deftest produto-tests
   (let [new-product (mg/generate produto/Produto {:size 35})

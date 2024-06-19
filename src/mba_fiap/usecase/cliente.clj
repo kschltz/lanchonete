@@ -6,7 +6,7 @@
   (:import [mba_fiap.repository.repository Repository]))
 
 
-(defn excluir-cliente [^Repository repository cpf]
+(defn excluir-por-cpf [^Repository repository cpf]
   {:pre [(instance? Repository repository)
          (validation/schema-check cpf/CPF cpf)]}
    (let [cliente (cliente-service/buscar-por-cpf repository cpf)]
@@ -14,6 +14,6 @@
       {:status :not-found
        :cliente cliente}
       (do
-        (cliente-service/remover-cliente repository (:id cliente))
+        (cliente-service/remover-por-cpf repository cpf)
         {:status :success
          :cliente cliente}))))

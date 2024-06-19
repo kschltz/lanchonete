@@ -44,11 +44,15 @@
          hs/format
          (jdbc/execute! connection)))
 
-  (remover [_ id]
-    (->> {:delete-from :cliente
-          :where [[:= :id id]]}
-         hs/format
-         (jdbc/execute-one! connection))))
+  (remover [_ id-or-cpf]
+    (let [where-clause (cond
+                         (uuid? id-or-cpf) [:= :id id-or-cpf]
+                         (uuid-parseable? id-or-cpf) [:= :id (parse-uuid id-or-cpf)]
+                         :else [:= :cpf id-or-cpf])]
+      (->> {:delete-from :cliente
+            :where       where-clause}
+           hs/format
+           (jdbc/execute-one! connection)))))
 
 (defmethod repository/make-repository :cliente
   [{:keys [connection]}]
