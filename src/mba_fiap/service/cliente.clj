@@ -15,8 +15,13 @@
 (defn buscar-por-cpf [^Repository repository cpf]
   {:pre [(instance? Repository repository)
          (validation/schema-check cpf/CPF cpf)]}
-  (let [{:cliente/keys [id nome email cpf]} (.buscar repository cpf)]
-    {:id id
-     :nome nome
-     :cpf cpf
-     :email email}))
+  (let [{:cliente/keys [id nome email cpf] :as cliente} (.buscar repository cpf)]
+    (when cliente
+      {:id    id
+       :nome  nome
+       :cpf   cpf
+       :email email})))
+
+(defn remover-por-cpf [^Repository repository cpf]
+  {:pre [(instance? Repository repository)]}
+  (.remover repository cpf))

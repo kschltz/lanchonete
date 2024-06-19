@@ -31,3 +31,4 @@
 **/*.iml
 *.iml
 .clj-kondo
+/postgresql
