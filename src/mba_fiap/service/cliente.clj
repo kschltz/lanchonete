@@ -20,3 +20,8 @@
      :nome nome
      :cpf cpf
      :email email}))
+
+(defn remover-cliente [^Repository repository id]
+  {:pre [(instance? Repository repository)
+         (uuid? id)]}
+  (.remover repository id))
