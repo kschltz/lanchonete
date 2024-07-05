@@ -1,4 +1,12 @@
 services:
+  nats:
+    image: nats:2.10.14-alpine
+    container_name: nats
+    restart: always
+    ports:
+      - "4222:4222"
+      - "6222:6222"
+      - "8222:8222"
   db:
     image: postgres:16.0
     restart: always

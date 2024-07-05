@@ -76,6 +76,7 @@
 
 
 (defmethod ig/init-key ::atualizar-status [_ {:keys [nats repository pagamento-status pedido-status]}]
+  (tap> nats)
   (.subscribe nats
               pedido-status
               (fn [msg]
@@ -86,3 +87,28 @@
               (fn [msg]
                 (->> (edn/read-string (String. (.getData msg)))
                      (editar-pedido repository)))))
+
+;Payload
+{:id               #uuid "ddcf393f-b6fe-4499-8b35-f8b62d9e5863"
+ :id-cliente       #uuid "bf7475a8-d306-4cb9-8277-ee4144ea536e"
+ :numero-do-pedido "01"
+ :produtos         [#uuid "20ddae69-3234-4b0b-a67c-16deb81dfafc"]
+ :status           "recebido"
+ :total            1850}
+;Payload
+{:_id       "664bfcc667595000012b816d"
+ :id-pedido #uuid "ddcf393f-b6fe-4499-8b35-f8b62d9e5863"
+ :total     1850
+ :status    "em processamento"}
+;Payload
+{:_id       "664bfcc667595000012b816d"
+ :id-pedido #uuid "ddcf393f-b6fe-4499-8b35-f8b62d9e5863"
+ :total     1850
+ :status    "pago"}
+;Payload
+{:id               #uuid "ddcf393f-b6fe-4499-8b35-f8b62d9e5863"
+ :id-cliente       #uuid "bf7475a8-d306-4cb9-8277-ee4144ea536e"
+ :numero-do-pedido "01"
+ :produtos         [#uuid "20ddae69-3234-4b0b-a67c-16deb81dfafc"]
+ :status           "em preparo"
+ :total            1850}

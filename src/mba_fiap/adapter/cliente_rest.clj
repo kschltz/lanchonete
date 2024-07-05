@@ -62,7 +62,7 @@
          :not-found
          {:status  404
           :headers {"Content-Type" "application/json"}
-          :body    {:error "The client does not exists in our system"}}))
+          :body    {:error "The client does not exist in our system"}}))
     
     (catch Exception e
       {:status  500

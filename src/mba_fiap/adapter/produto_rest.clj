@@ -8,6 +8,7 @@
 
 (defn listar-produtos
   [request]
+  (tap> [::11 request])
   (let [repository (get-in request [:app-context :repository/produto])
         categoria (get-in request [:path-params :categoria])
         result (produto.service/listar-produto repository categoria)]

@@ -49,7 +49,7 @@
   Closeable
   (close [_]
     (println "Closing MemoryNats")
-    (reset! store nil))
+    (reset! store :stopped))
   INATSClient
   (subscribe [_ subject handler]
     (let [dispatcher (reify MessageHandler
@@ -65,24 +65,27 @@
               (swap! store assoc subject [])
               (recur @store)))))))
 
-    (publish [_ subject msg]
-             (swap! store update subject conj msg)))
+  (publish [_ subject msg]
+    (swap! store update subject conj msg)))
 
 (defn nats-client [{:keys [app-name url subjects-handlers]}]
-  (let [connection (Nats/connect (-> (Options/builder)
-                                     (.server url)
-                                     (.build)))
-        dispatchers (->> subjects-handlers
-                         (mapv (fn [[subject handler]]
-                                 (doto (.createDispatcher connection (->dispatcher handler))
-                                   (.subscribe subject)))))]
-    (loop [status (.getStatus connection)]
-      (prn "NATS connection status: " status)
-      (if (= status Connection$Status/CONNECTED)
-        connection
-        (recur (.getStatus connection))))
+  (try
+    (let [connection (Nats/connect (-> (Options/builder)
+                                       (.server url)
+                                       (.build)))
+          dispatchers (->> subjects-handlers
+                           (mapv (fn [[subject handler]]
+                                   (doto (.createDispatcher connection (->dispatcher handler))
+                                     (.subscribe subject)))))]
+      (loop [status (.getStatus connection)]
+        (prn "NATS connection status: " status)
+        (if (= status Connection$Status/CONNECTED)
+          connection
+          (recur (.getStatus connection))))
 
-    (->NATSClient app-name connection dispatchers)))
+      (->NATSClient app-name connection dispatchers))
+    (catch Exception e
+      e)))
 
 (defmethod ig/init-key ::memory-nats [_ _]
   (->MemoryNats (atom {})))
@@ -97,7 +100,10 @@
     client))
 
 (defmethod ig/halt-key! ::client [_ client]
-  (.close client))
+  (try
+    (.close client)
+    (catch Exception e
+      e)))
 
 (defmethod ig/init-key ::simple-handler [_ {:keys [ctx handler-fn]}]
   (partial (eval handler-fn) ctx))

@@ -9,7 +9,7 @@
     [migratus.core :as migratus])
   (:import (org.testcontainers.shaded.org.bouncycastle.cms CMSCompressedDataStreamGenerator$CmsCompressedOutputStream)))
 
-(integrant.repl/set-prep! #(lanchonete/prep-config :dev))
+(integrant.repl/set-prep! #(lanchonete/prep-config :test))
 
 (def clear r/clear)
 (def go r/go)
@@ -201,6 +201,8 @@
   (.subscribe (nats) "pagamento.*" (fn [msg]
                                      (println "MSG" (bean msg))
                                      (println "Payload" (String. (.getData msg)))))
+
+  (.publish (nats) "test.from-clojure" "oi")
 
 
   (hato.client/request
