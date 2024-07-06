@@ -48,26 +48,20 @@
 
 (defn excluir-cliente
   [request]
-  (try 
-    (let [repository (get-in request [:app-context :repository/cliente])
-          {:keys [cpf]} (:path-params request)
-          result (usecase.cliente/excluir-por-cpf repository cpf)]
-      
-       (case (:status result) 
-         :success
-         {:status  200
-          :headers {"Content-Type" "application/json"}
-          :body    (:cliente result)}
+  (let [repository (get-in request [:app-context :repository/cliente])
+        {:keys [cpf]} (:path-params request)
+        result (usecase.cliente/excluir-por-cpf repository cpf)]
 
-         :not-found
-         {:status  404
-          :headers {"Content-Type" "application/json"}
-          :body    {:error "The client does not exist in our system"}}))
-    
-    (catch Exception e
-      {:status  500
+    (case (:status result)
+      :success
+      {:status  200
        :headers {"Content-Type" "application/json"}
-       :body    {:error (.getMessage e)}})))
+       :body    (:cliente result)}
+
+      :not-found
+      {:status  404
+       :headers {"Content-Type" "application/json"}
+       :body    {:error "The client does not exist in our system"}})))
 
 
 (defn cliente-routes
