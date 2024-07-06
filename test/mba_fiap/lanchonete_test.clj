@@ -81,13 +81,14 @@
           (is (= 400 (:status result)))
           (is (= {:error "The client does not exists in our system"} body)))))
 
-    (testing "Delete client"
-      (let [delete-response (hc/delete (str "http://localhost:8080/cliente/" (:cpf by-cpf))
-                                       {:throw-exceptions false})
-            get-response (hc/get (str "http://localhost:8080/cliente/" (:cpf by-cpf))
-                                 {:throw-exceptions false})]
-        (is (= 200 (:status delete-response)))
-        (is (= 404 (:status get-response)))))))
+    (testing "Delete cliente by CPF"
+      (let [cliente (-> (hc/get (str "http://localhost:8080/cliente/" (:cpf by-cpf)))
+                        :body
+                        (json/read-str :key-fn keyword))
+            response (hc/delete (str "http://localhost:8080/cliente/" (:cpf cliente)))]
+        (is (= 200 (:status response)))
+        (is (= 404 (:status (hc/delete (str "http://localhost:8080/cliente/" (:cpf response))
+                                       {:throw-exceptions false}))))))))
 
 (deftest produto-tests
   (let [new-product (mg/generate produto/Produto {:size 35})
