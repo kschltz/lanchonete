@@ -38,6 +38,8 @@
     (if (= 200 (:status response))
       client
       (throw (Exception. "Failed to retrieve the inserted client")))
+    (system/start-pg-container)
+    (system/start-nats-container)
     (system/system-stop)))
 
 (defn run-cucumber []
