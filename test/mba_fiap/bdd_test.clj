@@ -13,6 +13,7 @@
   {:scene/step "I have a new client with CPF"}
   [x]
   (system/start-pg-container)
+  (system/start-nats-container)
   (system/system-start)
   (Thread/sleep 4000)
   {:cpf (mg/generate cpf/CPF)})
@@ -37,8 +38,7 @@
     (if (= 200 (:status response))
       client
       (throw (Exception. "Failed to retrieve the inserted client")))
-    (system/system-stop)
-    (system/stop-pg-container)))
+    (system/system-stop)))
 
 (defn run-cucumber []
   (cucumber/-main "-g" "./test/mba_fiap/" "./test/resources/"))
