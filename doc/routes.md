@@ -105,3 +105,11 @@ curl --location 'http://localhost:8080/autenticar' \
     "password": "{{password}}"
 }'
 ```
+
+
+#### Deletar todos os dados de um usuário/cliente
+
+```cURL
+curl --location --request DELETE 'http://localhost:8080/cliente/<cpf-do-cliente>' \
+--data ''
+```
