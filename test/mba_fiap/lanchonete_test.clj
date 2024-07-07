@@ -9,14 +9,6 @@
             [mba-fiap.model.produto :as produto]
             [mba-fiap.system :as system]))
 
-(defn postgre-fixture [f]
-  (let [pg-container (system/start-pg-container)]
-
-    (try
-      (f)
-      (catch Exception e
-        (prn e))
-      (finally (system/stop-pg-container)))))
 
 (defn system-fixture [f]
   (let [_system (system/system-start)]
@@ -27,7 +19,7 @@
       (finally (system/system-stop)))))
 
 
-(use-fixtures :once (join-fixtures [postgre-fixture system-fixture]))
+(use-fixtures :once system-fixture)
 
 
 (deftest test-main
@@ -44,7 +36,6 @@
       (let [[cpf email anon] (->> [by-cpf by-email anonymous]
                                   (map #(hash-map :headers {"content-type" "application/json"}
                                                   :body (json/write-str %)
-
                                                   :throw-exceptions false))
                                   (map #(hc/post "http://localhost:8080/cliente" %))
                                   (mapv #(update % :body json/read-str))
@@ -88,7 +79,16 @@
                                                                                      :password "password"})})
               body (json/read-str body :key-fn keyword)]
           (is (= 400 (:status result)))
-          (is (= {:error "The client does not exists in our system"} body)))))))
+          (is (= {:error "The client does not exists in our system"} body)))))
+
+    (testing "Delete cliente by CPF"
+      (let [cliente (-> (hc/get (str "http://localhost:8080/cliente/" (:cpf by-cpf)))
+                        :body
+                        (json/read-str :key-fn keyword))
+            response (hc/delete (str "http://localhost:8080/cliente/" (:cpf cliente)))]
+        (is (= 200 (:status response)))
+        (is (= 404 (:status (hc/delete (str "http://localhost:8080/cliente/" (:cpf response))
+                                       {:throw-exceptions false}))))))))
 
 (deftest produto-tests
   (let [new-product (mg/generate produto/Produto {:size 35})

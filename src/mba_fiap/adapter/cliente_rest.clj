@@ -1,9 +1,9 @@
 (ns mba-fiap.adapter.cliente-rest
-  (:require
-   [io.pedestal.http.body-params :as body-params]
-   [io.pedestal.http.ring-middlewares :as middlewares]
-   [mba-fiap.service.cliente :as cliente.service]
-   [mba-fiap.service.auth :as auth.service]))
+  (:require [io.pedestal.http.body-params :as body-params]
+            [io.pedestal.http.ring-middlewares :as middlewares]
+            [mba-fiap.service.auth :as auth.service]
+            [mba-fiap.service.cliente :as cliente.service]
+            [mba-fiap.usecase.cliente :as usecase.cliente]))
 
 (defn cadastrar-cliente
   [request]
@@ -46,6 +46,24 @@
          :headers {"Content-Type" "application/json"}
          :body    {:error (.getMessage e)}}))))
 
+(defn excluir-cliente
+  [request]
+  (let [repository (get-in request [:app-context :repository/cliente])
+        {:keys [cpf]} (:path-params request)
+        result (usecase.cliente/excluir-por-cpf repository cpf)]
+
+    (case (:status result)
+      :success
+      {:status  200
+       :headers {"Content-Type" "application/json"}
+       :body    (:cliente result)}
+
+      :not-found
+      {:status  404
+       :headers {"Content-Type" "application/json"}
+       :body    {:error "The client does not exist in our system"}})))
+
+
 (defn cliente-routes
   []
   [["/cliente"
@@ -60,4 +78,5 @@
                     middlewares/keyword-params]
     {:post `autenticar-cliente}]
 
-   ["/cliente/:cpf" {:get `buscar-por-cpf}]])
+   ["/cliente/:cpf" {:get `buscar-por-cpf
+                     :delete `excluir-cliente}]])

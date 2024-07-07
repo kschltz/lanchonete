@@ -23,7 +23,10 @@
           #:cliente{:id (:id data)
                     :cpf (:cpf data)
                     :nome (:nome data)
-                    :email (:email data)})))))
+                    :email (:email data)})))
+    (remover [id]
+      (swap! store dissoc id)
+      nil)))
 
 (defspec all-valid-clientes-inserted 1000
   (prop/for-all [cliente (mg/generator cliente/Cliente)]
@@ -39,3 +42,10 @@
           found (cliente.service/buscar-por-cpf mr (:cpf cliente))]
       (= (:cpf cliente) (:cpf found)))))
 
+(defspec remover-cliente-test 1000
+  (prop/for-all [cliente (mg/generator cliente/CPFIdentifiedCliente)]
+    (let [store (atom {})
+          mr (mock-repository store)
+          _inserted (cliente.service/cadastrar-cliente mr cliente)]
+      (cliente.service/remover-por-cpf mr (:cpf cliente))
+      (nil? (cliente.service/buscar-por-cpf mr (:cpf cliente))))))

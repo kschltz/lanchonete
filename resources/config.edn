@@ -42,23 +42,22 @@
   :handler-fn clojure.core/println}
 
  :mba-fiap.adapter.nats/client
- {:url               #or [#env NATS_URL "nats://66.51.121.86:4222"]
+ {:url               #or [#env NATS_URL "nats://localhost:4222"]
   :app-name          "lanchonete"
   :subjects-handlers {"lanchonete.*" #ig/ref :simple/printer}}
 
- :mba-fiap.adapter.nats/memory-nats {}
 
  :mba-fiap.service.pedido/checkout
- {:nats #ig/ref :mba-fiap.adapter.nats/client
-  :pagamento-status #or [#env PAGAMENTO_STATUS "pagamento.status"]
-  :pedido-novo-preparo  #or [#env PEDIDO_NOVO_PREPARO "pedido.novo-preparo"]
-  :subject #or [#env PAGAMENTO_NOVO_PEDIDO "pagamento.novo-pedido"]}
+ {:nats                #ig/ref :mba-fiap.adapter.nats/client
+  :pagamento-status    #or [#env PAGAMENTO_STATUS "pagamento.status"]
+  :pedido-novo-preparo #or [#env PEDIDO_NOVO_PREPARO "pedido.novo-preparo"]
+  :subject             #or [#env PAGAMENTO_NOVO_PEDIDO "pagamento.novo-pedido"]}
 
  :mba-fiap.service.pedido/atualizar-status
- {:nats #ig/ref :mba-fiap.adapter.nats/client
-  :repository/pedido    #ig/ref :repository/pedido
-  :pedido-status #or [#env PAGAMENTO_STATUS "pedido.status"]
-  :pagamento-status #or [#env PAGAMENTO_STATUS "pagamento.status"]}
+ {:nats              #ig/ref :mba-fiap.adapter.nats/client
+  :repository/pedido #ig/ref :repository/pedido
+  :pedido-status     #or [#env PAGAMENTO_STATUS "pedido.status"]
+  :pagamento-status  #or [#env PAGAMENTO_STATUS "pagamento.status"]}
 
  :mba-fiap.adapter.http.server/server
  {:env         #profile {:default :dev
@@ -69,11 +68,10 @@
                          :test    false
                          :dev     false}
 
-  :app-context {:nats                 #profile {:test #ig/ref :mba-fiap.adapter.nats/memory-nats
-                                                :default #ig/ref :mba-fiap.adapter.nats/client}
-                :migrations           #ig/ref :mba-fiap.datasource.migratus/migratus
-                :usecase/checkout     #ig/ref :mba-fiap.service.pedido/checkout
-                :repository/cliente   #ig/ref :repository/cliente
-                :repository/produto   #ig/ref :repository/produto
-                :repository/pedido    #ig/ref :repository/pedido
-                :auth                 #ig/ref :mba-fiap.service.auth/auth}}}
+  :app-context {:nats               #ig/ref :mba-fiap.adapter.nats/client
+                :migrations         #ig/ref :mba-fiap.datasource.migratus/migratus
+                :usecase/checkout   #ig/ref :mba-fiap.service.pedido/checkout
+                :repository/cliente #ig/ref :repository/cliente
+                :repository/produto #ig/ref :repository/produto
+                :repository/pedido  #ig/ref :repository/pedido
+                :auth               #ig/ref :mba-fiap.service.auth/auth}}}

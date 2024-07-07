@@ -13,11 +13,12 @@
          integrant/repl                    {:mvn/version "0.3.3"}
          migratus/migratus                 {:mvn/version "1.5.3"}
          io.nats/jnats                     {:mvn/version "2.17.6"}
+         org.clojars.kjw/slf4j-simple      {:mvn/version "1.5.5"}
          org.slf4j/slf4j-log4j12           {:mvn/version "1.6.3"}
          org.clojure/data.json             {:mvn/version "2.4.0"}
          org.clojure/tools.logging         {:mvn/version "1.2.4"}
          medley/medley                     {:mvn/version "1.4.0"}
-         hato/hato             {:mvn/version "0.9.0"}
+         hato/hato                         {:mvn/version "0.9.0"}
          clj-http/clj-http                 {:mvn/version "3.12.3"}}
 
  :aliases
