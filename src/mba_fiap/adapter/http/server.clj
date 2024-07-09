@@ -11,23 +11,18 @@
 
 (defn context-interceptor
   [context]
-  (tap> [::14 context])
   (interceptor/on-request #(assoc % :app-context context)))
 
 (defn tap-interceptor
   []
-  (interceptor/on-request #(doto % tap>)))
+  (interceptor/around (fn [c] (tap> [::enter c]) c)
+                      (fn [c] (tap> [::leave c]) c)))
 
 (def parse-json-body-interceptor
   (interceptor/on-response #(do
                               (tap> [::23 %])
                               (update % :body json/write-str))))
 
-(def tap-error-interceptor
-  (interceptor/after
-    (fn [x]
-      (tap> [::dev-logging x])
-      x)))
 
 (defn routes
   []
@@ -56,9 +51,6 @@
              ::http/host          "0.0.0.0"}
             :always http/default-interceptors
             :always (add-interceptors ctx-interceptor parse-json-body-interceptor (tap-interceptor))
-            (or (= :dev env)
-                (= :test env)) (-> http/dev-interceptors
-                                   (add-interceptors tap-error-interceptor))
             :then http/create-server)))
 
 (defmethod ig/init-key ::server [_ cfg]

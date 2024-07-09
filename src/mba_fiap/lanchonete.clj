@@ -31,6 +31,7 @@
   [profile]
   (log/start-publisher! {:type :console})
   (-> (prep-config profile)
+      (doto tap>)
       (ig/init)))
 
 (defn -main

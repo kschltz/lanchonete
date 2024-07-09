@@ -9,7 +9,7 @@
     [migratus.core :as migratus])
   (:import (org.testcontainers.shaded.org.bouncycastle.cms CMSCompressedDataStreamGenerator$CmsCompressedOutputStream)))
 
-(integrant.repl/set-prep! #(lanchonete/prep-config :test))
+(integrant.repl/set-prep! #(doto (lanchonete/prep-config :test) tap>))
 
 (def clear r/clear)
 (def go r/go)

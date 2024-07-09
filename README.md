@@ -91,6 +91,61 @@ Run that uberjar:
 
     $ java -jar target/lanchonete-0.1.0-SNAPSHOT.jar
 
+## ZAP OWASP scan
+
+### 08/07/2024
+
+| Plugin | Strength | Progress | Elapsed | Reqs | Alerts | Status |
+|--------|----------|----------|---------|------|--------|--------|
+| Analyser | | 00:00.116 | 1 | | |
+| Path Traversal | Medium | 100 | 00:00.156 | 0 | 0 | Completed |
+| Remote File Inclusion | Medium | 100 | 00:00.012 | 0 | 0 | Completed |
+| Source Code Disclosure - /WEB-INF Folder | Medium | 100 | 00:00.030 | 2 | 0 | Completed |
+| Heartbleed OpenSSL Vulnerability | Medium | 100 | 00:00.024 | 3 | 0 | Completed |
+| Source Code Disclosure - CVE-2012-1823 | Medium | 100 | 00:00.059 | 1 | 0 | Completed |
+| Remote Code Execution - CVE-2012-1823 | Medium | 100 | 00:00.033 | 4 | 0 | Completed |
+| External Redirect | Medium | 100 | 00:00.009 | 0 | 0 | Completed |
+| Server Side Include | Medium | 100 | 00:00.009 | 0 | 0 | Completed |
+| Cross Site Scripting (Reflected) | Medium | 100 | 00:00.013 | 0 | 0 | Completed |
+| Cross Site Scripting (Persistent) - Prime | Medium | 100 | 00:00.016 | 0 | 0 | Completed |
+| Cross Site Scripting (Persistent) - Spider | Medium | 100 | 00:00.047 | 2 | 0 | Completed |
+| Cross Site Scripting (Persistent) | Medium | 100 | 00:00.007 | 0 | 0 | Completed |
+| SQL Injection | Medium | 100 | 00:00.008 | 0 | 0 | Completed |
+| SQL Injection - MySQL | Medium | 100 | 00:00.009 | 0 | 0 | Completed |
+| SQL Injection - Hypersonic SQL | Medium | 100 | 00:00.009 | 0 | 0 | Completed |
+| SQL Injection - Oracle | Medium | 100 | 00:00.006 | 0 | 0 | Completed |
+| SQL Injection - PostgreSQL | Medium | 100 | 00:00.007 | 0 | 0 | Completed |
+| SQL Injection - SQLite | Medium | 100 | 00:00.007 | 0 | 0 | Completed |
+| Cross Site Scripting (DOM Based) | Medium | 100 | 02:12.225 | 0 | 0 | Skipped, failed to start or connect to the browser. |
+| SQL Injection - MsSQL | Medium | 100 | 00:00.026 | 0 | 0 | Completed |
+| Log4Shell | Medium | 100 | 00:00.016 | 0 | 0 | Skipped, no Active Scan OAST service is selected.. |
+| Spring4Shell | Medium | 100 | 00:00.146 | 4 | 0 | Completed |
+| Server Side Code Injection | Medium | 100 | 00:00.017 | 0 | 0 | Completed |
+| Remote OS Command Injection | Medium | 100 | 00:00.018 | 0 | 0 | Completed |
+| XPath Injection | Medium | 100 | 00:00.017 | 0 | 0 | Completed |
+| XML External Entity Attack | Medium | 100 | 00:00.017 | 0 | 0 | Completed |
+| Generic Padding Oracle | Medium | 100 | 00:00.018 | 0 | 0 | Completed |
+| Cloud Metadata Potentially Exposed | Medium | 100 | 00:00.059 | 4 | 0 | Completed |
+| Server Side Template Injection | Medium | 100 | 00:00.047 | 0 | 0 | Completed |
+| Server Side Template Injection (Blind) | Medium | 100 | 00:00.011 | 0 | 0 | Completed |
+| Directory Browsing | Medium | 100 | 00:00.029 | 2 | 0 | Completed |
+| Buffer Overflow | Medium | 100 | 00:00.011 | 0 | 0 | Completed |
+| Format String Error | Medium | 100 | 00:00.013 | 0 | 0 | Completed |
+| CRLF Injection | Medium | 100 | 00:00.010 | 0 | 0 | Completed |
+| Parameter Tampering | Medium | 100 | 00:00.010 | 0 | 0 | Completed |
+| ELMAH Information Leak | Medium | 100 | 00:00.022 | 1 | 0 | Completed |
+| Trace.axd Information Leak | Medium | 100 | 00:00.035 | 2 | 0 | Completed |
+| .htaccess Information Leak | Medium | 100 | 00:00.066 | 2 | 0 | Completed |
+| .env Information Leak | Medium | 100 | 00:00.031 | 2 | 0 | Completed |
+| Spring Actuator Information Leak | Medium | 100 | 00:00.017 | 2 | 0 | Completed |
+| Hidden File Finder | Medium | 100 | 00:00.277 | 50 | 0 | Completed |
+| XSLT Injection | Medium | 100 | 00:00.244 | 0 | 0 | Completed |
+| GET for POST | Medium | 100 | 00:00.008 | 0 | 0 | Completed |
+| User Agent Fuzzer | Medium | 100 | 00:00.336 | 24 | 0 | Completed |
+| Script Active Scan Rules | Medium | 100 | 00:00.004 | 0 | 0 | Skipped, no scripts enabled. |
+| SOAP Action Spoofing | Medium | 100 | 00:00.005 | 0 | 0 | Completed |
+| SOAP XML Injection | Medium | 100 | 00:00.006 | 0 | 0 | Completed |
+
 ## License
 
 Copyright © 2023 Kschltz

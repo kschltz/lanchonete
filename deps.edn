@@ -1,7 +1,7 @@
 {:paths ["src" "resources"]
- :deps  {io.pedestal/pedestal.service      {:mvn/version "0.5.7"}
-         io.pedestal/pedestal.route        {:mvn/version "0.5.7"}
-         io.pedestal/pedestal.jetty        {:mvn/version "0.5.7"}
+ :deps  {io.pedestal/pedestal.service      {:mvn/version "0.7.0"}
+         io.pedestal/pedestal.route        {:mvn/version "0.7.0"}
+         io.pedestal/pedestal.jetty        {:mvn/version "0.7.0"}
          com.brunobonacci/mulog            {:mvn/version "0.9.0"}
          metosin/malli                     {:mvn/version "0.13.0"}
          com.github.seancorfield/honeysql  {:mvn/version "2.4.1066"}
