@@ -47,11 +47,33 @@ Abaixo está os diagramas de infraestrutura desse sistema.
 
 ![img_2.png](k8s-database.png)
 
-#### Serviços externos
+### Coreografia do pedido
 
-O serviço principal (Lanchonete)  , comunica-se via mensageria com o serviço de pagamento e o serviço de preparo de
-pedidos. A comunicação é feita através de um broker NATS detalhada abaixo.
+O fluxo de pagamento em sua aplicação é gerenciado por uma SAGA coreografada. Aqui está a documentação detalhada do fluxo:
 
+1. **Início da SAGA (Cliente -> Lanchonete)**: A SAGA começa quando o cliente conclui o pedido e solicita o pagamento. Esta ação é tratada pelo serviço Lanchonete.
+
+2. **Evento de Novo Pedido de Pagamento (Lanchonete -> NATS Broker)**: O serviço Lanchonete publica um evento `pagamento.novo-pedido` no broker NATS. Este evento contém os detalhes do pedido que precisa ser processado.
+
+3. **Processamento do Pedido de Pagamento (NATS Broker -> Pagamento)**: O serviço Pagamento, que está escutando o evento `pagamento.novo-pedido`, recebe o evento do broker NATS e começa a processar o pedido de pagamento.
+
+4. **Publicação do Status do Pagamento (Pagamento -> NATS Broker)**: Uma vez que o pagamento é processado, o serviço Pagamento publica um evento `pagamento.status` no broker NATS. Este evento contém o status do pagamento.
+
+5. **Atualização do Status do Pagamento (NATS Broker -> Lanchonete)**: O serviço Lanchonete, que está escutando o evento `pagamento.status`, recebe o evento do broker NATS e atualiza o status do pagamento em seu banco de dados.
+
+6. **Alternativamente**: Se o pagamento falhar, o fluxo não prossegue e o cliente é notificado sobre o erro.
+
+7. **Evento de Novo Pedido de Preparo (Lanchonete -> NATS Broker)**: Uma vez que o pagamento é bem-sucedido, o serviço Lanchonete publica um evento `pedido.novo-preparo` no broker NATS. Este evento indica que o pedido está pronto para ser preparado.
+
+8. **Preparação do Pedido (NATS Broker -> Preparo)**: O serviço Preparo, que está escutando o evento `pedido.novo-preparo`, recebe o evento do broker NATS e começa a preparar o pedido.
+
+9. **Publicação do Status do Pedido (Preparo -> NATS Broker)**: À medida que o pedido é preparado, o serviço Preparo publica eventos `pedido.status` no broker NATS. Estes eventos contêm o status atual do pedido.
+
+10. **Atualização do Status do Pedido (NATS Broker -> Lanchonete)**: O serviço Lanchonete, que está escutando o evento `pedido.status`, recebe os eventos do broker NATS e atualiza o status do pedido em seu banco de dados.
+
+11. **Fim da SAGA (NATS Broker -> Lanchonete)**: A SAGA termina quando o pedido está pronto para ser entregue ao cliente. O serviço Lanchonete recebe um evento final `pedido.status` com o status "pronto" do broker NATS.
+
+Este fluxo garante que todas as etapas do processo de pedido e pagamento sejam realizadas em ordem e que o estado do pedido seja mantido consistente em todos os serviços.
 ```mermaid
 sequenceDiagram
     participant C as Cliente
@@ -73,5 +95,4 @@ sequenceDiagram
         N ->> L: 9. pedido.status (persiste status do pedido)
     end
     N ->> L: 10. pedido.status (pedido pronto)
-
 ```

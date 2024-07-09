@@ -59,6 +59,11 @@
   :pedido-status     #or [#env PAGAMENTO_STATUS "pedido.status"]
   :pagamento-status  #or [#env PAGAMENTO_STATUS "pagamento.status"]}
 
+ :mba-fiap.service.pedido/notificar-usuario
+ {:nats              #ig/ref :mba-fiap.adapter.nats/client
+  :pedido-status     #or [#env PAGAMENTO_STATUS "pedido.status"]
+  :pagamento-status  #or [#env PAGAMENTO_STATUS "pagamento.status"]}
+
  :mba-fiap.adapter.http.server/server
  {:env         #profile {:default :dev
                          :test    :test

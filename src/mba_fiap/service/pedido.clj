@@ -1,9 +1,11 @@
 (ns mba-fiap.service.pedido
   (:require
     [clojure.edn :as edn]
+    [com.brunobonacci.mulog :as log]
     [integrant.core :as ig]
     [mba-fiap.base.validation :as validation]
     [mba-fiap.model.pedido :as pedido]
+    [mba-fiap.model.pagamento :as pagamento]
     [mba-fiap.usecase.pedido :as pedido.use-case])
   (:import
     (mba_fiap.repository.repository
@@ -76,7 +78,6 @@
 
 
 (defmethod ig/init-key ::atualizar-status [_ {:keys [nats repository pagamento-status pedido-status]}]
-  (tap> nats)
   (.subscribe nats
               pedido-status
               (fn [msg]
@@ -87,6 +88,15 @@
               (fn [msg]
                 (->> (edn/read-string (String. (.getData msg)))
                      (editar-pedido repository)))))
+
+(defmethod ig/init-key ::notificar-usuario [_ {:keys [nats pagamento-status]}]
+  (.subscribe nats
+              pagamento-status
+              (fn [msg]
+                (let [pgmto (edn/read-string (String. (.getData msg)))]
+                  (when (= pagamento/recusado (:status pgmto))
+                    (log/log ::payment-refused pgmto))))))
+
 
 ;Payload
 {:id               #uuid "ddcf393f-b6fe-4499-8b35-f8b62d9e5863"
