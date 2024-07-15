@@ -29,11 +29,17 @@
 
 (defn listar-pedidos
   [request]
-  (let [repository (get-in request [:app-context :repository/pedido])
-        result (pedido.service/listar-pedidos repository (usecase.p/listar-pedidos-abertos))]
-    {:status  200
-     :headers {"Content-Type" "application/json"}
-     :body    result}))
+  (try
+    (let [repository (get-in request [:app-context :repository/pedido])
+          result (pedido.service/listar-pedidos repository (usecase.p/listar-pedidos-abertos))]
+      {:status  200
+       :headers {"Content-Type" "application/json"}
+       :body    result})
+    (catch Exception e
+      (prn e)
+      {:status  500
+       :headers {"Content-Type" "application/json"}
+       :body    (str e)})))
 
 (defn editar-pedido
   [request]
@@ -52,17 +58,11 @@
 
 (defn pedido-routes
   []
-  [["/pedido" ^:interceptors [(body-params/body-params)
-                              middlewares/params
-                              middlewares/keyword-params]
+  [["/pedido" ^:interceptors [(body-params/body-params)]
     {:post `cadastrar-pedido}]
-   ["/pedidos" ^:interceptors [(body-params/body-params)
-                               middlewares/params
-                               middlewares/keyword-params]
+   ["/pedidos" ^:interceptors [(body-params/body-params)]
     {:get `listar-pedidos}]
 
-   ["/pedido/:id" ^:interceptors [(body-params/body-params)
-                                  middlewares/params
-                                  middlewares/keyword-params]
+   ["/pedido/:id" ^:interceptors [(body-params/body-params)]
     {:put `editar-pedido}]])
 

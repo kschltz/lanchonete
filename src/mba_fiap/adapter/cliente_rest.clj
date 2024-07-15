@@ -67,15 +67,11 @@
 (defn cliente-routes
   []
   [["/cliente"
-    ^:interceptors [(body-params/body-params)
-                    middlewares/params
-                    middlewares/keyword-params]
+    ^:interceptors [(body-params/body-params)]
     {:post `cadastrar-cliente}]
 
    ["/autenticar"
-    ^:interceptors [(body-params/body-params)
-                    middlewares/params
-                    middlewares/keyword-params]
+    ^:interceptors [(body-params/body-params)]
     {:post `autenticar-cliente}]
 
    ["/cliente/:cpf" {:get `buscar-por-cpf
