@@ -74,6 +74,25 @@ O fluxo de pagamento em sua aplicação é gerenciado por uma SAGA coreografada.
 11. **Fim da SAGA (NATS Broker -> Lanchonete)**: A SAGA termina quando o pedido está pronto para ser entregue ao cliente. O serviço Lanchonete recebe um evento final `pedido.status` com o status "pronto" do broker NATS.
 
 Este fluxo garante que todas as etapas do processo de pedido e pagamento sejam realizadas em ordem e que o estado do pedido seja mantido consistente em todos os serviços.
+
+#### Motivo de escolha do SAGA coreografada
+
+A arquitetura SAGA coreografada é uma abordagem descentralizada para lidar com transações distribuídas, onde cada serviço envolvido no processo de negócio é responsável por publicar eventos e reagir a eventos de outros serviços. Neste caso, cada serviço sabe o que fazer quando um evento específico ocorre.
+
+No documento, a SAGA coreografada é usada para gerenciar o fluxo de pedidos em uma lanchonete. Cada serviço (Lanchonete, Pagamento, Preparo) publica eventos e reage a eventos de outros serviços para processar um pedido.
+
+Aqui estão algumas razões pelas quais a SAGA coreografada foi preferida à SAGA orquestrada neste cenário:
+
+1. **Desacoplamento**: Cada serviço é independente e só precisa saber sobre os eventos que lhe interessam. Isso torna o sistema mais flexível e fácil de modificar ou estender.
+
+2. **Escalabilidade**: Como não há um único ponto de coordenação, o sistema pode escalar melhor. Cada serviço pode ser escalado de forma independente com base em suas próprias necessidades.
+
+3. **Resiliência**: Se um serviço falhar, ele não interromperá todo o processo. Outros serviços podem continuar processando seus próprios eventos.
+
+4. **Simplicidade**: Não há necessidade de um orquestrador central, o que pode simplificar o design e a implementação do sistema.
+
+Como o processo da lanchonete é um projeto relativamente simples, a SAGA coreografada foi escolhida como a melhor abordagem para gerenciar o fluxo.
+
 ```mermaid
 sequenceDiagram
     participant C as Cliente
