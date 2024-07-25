@@ -7,6 +7,9 @@ services:
       - "4222:4222"
       - "6222:6222"
       - "8222:8222"
+    networks:
+      - lanchonete
+    command: "-DV"
   db:
     image: postgres:16.0
     restart: always
@@ -19,7 +22,7 @@ services:
     volumes:
       - ./postgresql/data:/var/lib/postgresql/data
     networks:
-      - default
+      - lanchonete
 
   lanchonete:
     build: .
@@ -34,8 +37,9 @@ services:
       - POSTGRES_HOST=db
       - POSTGRES_PORT=5432
       - HTTP_PORT=8080
+      - NATS_URL=nats://nats:4222
     networks:
-      - default
+      - lanchonete
     ports:
       - "8080:8080"
 
@@ -43,5 +47,5 @@ services:
 volumes:
   m2-repo:
 
-
-
+networks:
+  lanchonete:
