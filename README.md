@@ -113,6 +113,10 @@ Não temos contexto no cenário atual do app de rotas expostas para pagamento, s
 
 Esse fluxo de pagamento está centralizado na arquitetura SAGA.
 
+## RIPD Report - Relatório de Impacto à Proteção de Dados
+
+[RIPD - Lanchonete FIAP](https://docs.google.com/document/d/1lt-TSDrFzfbCzAB1NOpEXT-qH11wBRe3_AjL2LAYr-w/edit?usp=sharing)
+
 ## License
 
 Copyright © 2023 Kschltz
